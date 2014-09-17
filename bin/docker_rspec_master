@@ -1,0 +1,10 @@
+#!/usr/bin/env ruby
+
+require 'docker_test'
+require 'docker_test/runner/rspec'
+
+port = ENV['DOCKER_TEST_MASTER_PORT'] || 7000
+
+master = DockerTest::Master.new(DockerTest::Runner::RSpec)
+master.add_worker(8000)
+master.start

@@ -3,5 +3,3 @@ $LOAD_PATH.unshift(File.dirname(__FILE__))
 
 require 'rspec'
 require 'docker_test'
-
-Dir["#{File.dirname(__FILE__)}/support/**/*.rb"].each { |f| require f }

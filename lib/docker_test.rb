@@ -1,0 +1,11 @@
+require 'socket'
+
+module DockerTest
+
+end
+
+require 'docker_test/master'
+require 'docker_test/worker'
+require 'docker_test/worker_client'
+require 'docker_test/message'
+require 'docker_test/runner'

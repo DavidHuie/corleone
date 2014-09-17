@@ -1,0 +1,10 @@
+#!/usr/bin/env ruby
+
+require 'docker_test'
+require 'docker_test/runner/rspec'
+
+port = ENV['DOCKER_TEST_WORKER_PORT'] || 8000
+
+runner = DockerTest::Runner::RSpec::DockerRunner.new
+worker = DockerTest::Worker.new(port, runner)
+worker.start
