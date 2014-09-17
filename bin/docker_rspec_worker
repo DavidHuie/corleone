@@ -5,6 +5,6 @@ require 'docker_test/runner/rspec'
 
 port = ENV['DOCKER_TEST_WORKER_PORT'] || 8000
 
-runner = DockerTest::Runner::RSpec::DockerRunner.get_runner(ARGV)
-worker = DockerTest::Worker.new(port, runner)
+worker = DockerTest::Worker.new(port,
+                                DockerTest::Runner::RSpec::DockerRunner)
 worker.start

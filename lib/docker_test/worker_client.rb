@@ -15,7 +15,6 @@ class DockerTest::WorkerClient
     msg = Marshal.dump(message)
     loop do
       continue if IO.select(nil, [socket], nil, SELECT_TIMEOUT).nil?
-      puts "sending message: #{msg.inspect}"
       socket.puts(msg)
       # Thread.new { block.call(Marshal.load(read)) }
       block.call(Marshal.load(read)) if read_response

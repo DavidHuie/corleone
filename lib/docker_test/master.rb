@@ -20,14 +20,14 @@ class DockerTest::Master
   def distribute_message(message)
     worker = checkout_worker
     worker.send_message(message) do |response|
-      # message.process_response(response)
+      raise 'error sending message' if response.instance_of?(DockerTest::Message::Error)
       return_worker(worker)
     end
   end
 
   def stop
     worker = checkout_worker
-    worker.send_message(DockerTest::ExitMessage.new, false)
+    worker.send_message(DockerTest::Message::Exit.new, false)
   end
 
   def start

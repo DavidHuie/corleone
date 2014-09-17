@@ -2,9 +2,9 @@ class DockerTest::Worker
 
   LISTEN_IP = '0.0.0.0'
 
-  def initialize(port, runner)
+  def initialize(port, runner_class)
     @port = port
-    @runner = runner
+    @runner_class = runner_class
     @input_queue = Queue.new
     @output_queue = Queue.new
   end
@@ -22,22 +22,26 @@ class DockerTest::Worker
   def start
     start_runner
     client = server.accept
+    quit = false
 
     loop do
       if IO.select([client], nil, nil, SELECT_TIMEOUT)
         raw_message = client.gets
         next unless raw_message
-        puts "raw message: #{raw_message.inspect}"
         message = Marshal.load(raw_message)
         @input_queue << message
+        response = nil
 
-        if message.is_a?(DockerTest::ExitMessage)
+        if message.instance_of?(DockerTest::Message::Exit)
           @runner_thread.join
-          return
+          response = DockerTest::Message::Success.new
+          quit = true
+        else
+          response = @output_queue.pop
         end
 
-        response = @output_queue.pop
         client.puts(Marshal.dump(response))
+        break if quit
       end
     end
 

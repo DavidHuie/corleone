@@ -8,8 +8,11 @@ module DockerTest
       @payload = payload
     end
 
-  end
+    class Error < Message; end
+    class Success < Message; end
+    class Setup < Message; end
+    class Exit < Message; end
 
-  class ExitMessage < Message; end
+  end
 
 end

@@ -2,6 +2,10 @@ require 'rspec/core'
 
 class DockerTest::Runner::RSpec < DockerTest::Runner
 
+  def setup_message
+    DockerTest::Message::Setup.new(ARGV)
+  end
+
   def initialize(&block)
     super(&block)
     @rspec = DockerRunner.get_runner(ARGV)
@@ -31,7 +35,7 @@ class DockerTest::Runner::RSpec < DockerTest::Runner
           loop do
             message = input_queue.pop
 
-            break if message.instance_of?(DockerTest::ExitMessage)
+            break if message.instance_of?(DockerTest::Message::Exit)
 
             start = Time.now
             ret = message.payload.run(reporter)
