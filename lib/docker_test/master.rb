@@ -20,13 +20,19 @@ class DockerTest::Master
   def distribute_message(message)
     worker = checkout_worker
     worker.send_message(message) do |response|
-      message.process_response(response)
+      # message.process_response(response)
       return_worker(worker)
     end
   end
 
+  def stop
+    worker = checkout_worker
+    worker.send_message(DockerTest::ExitMessage.new, false)
+  end
+
   def start
     @runner.run
+    stop
   end
 
 end

@@ -1,6 +1,11 @@
+require 'logger'
 require 'socket'
 
 module DockerTest
+
+  def self.logger
+    @logger ||= Logger.new(STDOUT)
+  end
 
 end
 

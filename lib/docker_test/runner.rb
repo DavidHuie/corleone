@@ -5,8 +5,9 @@ class DockerTest::Runner
   end
 
   def run
-    @examples.each { |ex| @distribute_block.call(DockerTest::Message.new(example)) }
-    @distribute_block.call(DockerTest::ExitMessage.new)
+    @examples.each do |ex|
+      @distribute_block.call(DockerTest::Message.new(ex))
+    end
   end
 
 end

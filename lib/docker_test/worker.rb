@@ -20,12 +20,15 @@ class DockerTest::Worker
   SELECT_TIMEOUT = 0.1
 
   def start
-    client = server.accept
     start_runner
+    client = server.accept
 
     loop do
-      if IO.select([server], nil, nil, SELECT_TIMEOUT)
-        message = Marshal.load(client.gets)
+      if IO.select([client], nil, nil, SELECT_TIMEOUT)
+        raw_message = client.gets
+        next unless raw_message
+        puts "raw message: #{raw_message.inspect}"
+        message = Marshal.load(raw_message)
         @input_queue << message
 
         if message.is_a?(DockerTest::ExitMessage)
@@ -34,7 +37,7 @@ class DockerTest::Worker
         end
 
         response = @output_queue.pop
-        server.puts(Marshal.dump(response))
+        client.puts(Marshal.dump(response))
       end
     end
 
