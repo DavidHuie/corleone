@@ -20,7 +20,6 @@ class DockerTest::Worker
   SELECT_TIMEOUT = 0.1
 
   def start
-    start_runner
     client = server.accept
     quit = false
 
@@ -29,14 +28,21 @@ class DockerTest::Worker
         raw_message = client.gets
         next unless raw_message
         message = Marshal.load(raw_message)
-        @input_queue << message
         response = nil
 
+        puts "received message #{message.class}: #{message.payload.inspect}"
+
         if message.instance_of?(DockerTest::Message::Exit)
+          @input_queue << message
           @runner_thread.join
           response = DockerTest::Message::Success.new
           quit = true
+        elsif message.instance_of?(DockerTest::Message::Setup)
+          @runner = @runner_class.get_runner(message.payload)
+          start_runner
+          response = DockerTest::Message::Success.new
         else
+          @input_queue << message
           response = @output_queue.pop
         end
 
