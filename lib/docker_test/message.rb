@@ -13,7 +13,6 @@ module DockerTest
     class Item < Message; end
     class Result < Message; end
     class Setup < Message; end
-    class Success < Message; end
     class ZeroItems < Message; end
 
   end
