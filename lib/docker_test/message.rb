@@ -2,7 +2,7 @@ module DockerTest
 
   class Message
 
-    attr_accessor :output, :timing, :payload
+    attr_accessor :output, :timing, :payload, :metadata
 
     def initialize(payload = nil)
       @payload = payload

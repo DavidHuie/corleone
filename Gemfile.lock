@@ -3,6 +3,12 @@ GEM
   specs:
     addressable (2.3.6)
     builder (3.2.2)
+    byebug (3.4.0)
+      columnize (~> 0.8)
+      debugger-linecache (~> 1.2)
+      slop (~> 3.6)
+    columnize (0.8.9)
+    debugger-linecache (1.2.0)
     descendants_tracker (0.0.4)
       thread_safe (~> 0.3, >= 0.3.1)
     diff-lcs (1.2.5)
@@ -58,11 +64,13 @@ GEM
     rspec-mocks (3.1.0)
       rspec-support (~> 3.1.0)
     rspec-support (3.1.0)
+    slop (3.6.0)
     thread_safe (0.3.4)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
+  byebug
   jeweler
   rspec

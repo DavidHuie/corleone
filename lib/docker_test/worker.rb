@@ -52,6 +52,8 @@ class DockerTest::Worker
     end
 
     client.close
+  ensure
+    @runner_thread.join
   end
 
 end

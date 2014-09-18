@@ -17,10 +17,23 @@ class DockerTest::Master
     @worker_queue << worker
   end
 
+  def for_all_workers
+    workers = []
+    threads = []
+    loop do
+      break if @worker_queue.empty?
+      worker = @worker_queue.pop
+      threads << Thread.new { yield(worker) }
+      workers << worker
+    end
+    threads.map(&:join)
+    workers.each { |w| @worker_queue << w }
+  end
+
   def distribute_message(message)
     worker = checkout_worker
     worker.send_message(message) do |response|
-      raise 'error sending message' if response.instance_of?(DockerTest::Message::Error)
+      validate_response(response)
       return_worker(worker)
     end
   end
@@ -32,15 +45,20 @@ class DockerTest::Master
     end
   end
 
+  def validate_response(response)
+    raise 'error sending message' if response.instance_of?(DockerTest::Message::Error)
+  end
+
   def stop
-    worker = checkout_worker
-    worker.send_message(DockerTest::Message::Exit.new) { return_worker(worker) }
+    for_all_workers do |worker|
+      worker.send_message(DockerTest::Message::Exit.new) { |response| validate_response(response) }
+    end
   end
 
   def setup
-    # TODO: apply to all workers
-    worker = checkout_worker
-    worker.send_message(@runner.setup_message) { return_worker(worker) }
+    for_all_workers do |worker|
+      worker.send_message(@runner.setup_message) { |response| validate_response(response) }
+    end
   end
 
   def start

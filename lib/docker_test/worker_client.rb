@@ -31,7 +31,7 @@ class DockerTest::WorkerClient
     loop do
       # TODO: raise exception after enough time
       next if IO.select([socket], nil, nil, SELECT_TIMEOUT).nil?
-      response = socket.gets.strip
+      response = socket.gets
       return response
     end
   end
