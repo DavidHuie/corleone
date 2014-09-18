@@ -1,6 +1,6 @@
 require 'base64'
 require 'logger'
-require 'socket'
+require 'drb/drb'
 
 module DockerTest
 
@@ -10,8 +10,6 @@ module DockerTest
 
 end
 
-require 'docker_test/master'
-require 'docker_test/worker'
-require 'docker_test/worker_client'
+require 'docker_test/server'
 require 'docker_test/message'
-require 'docker_test/runner'
+require 'docker_test/worker'

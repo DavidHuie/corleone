@@ -1,59 +1,64 @@
 class DockerTest::Worker
 
-  LISTEN_IP = '0.0.0.0'
-
-  def initialize(port, runner_class)
-    @port = port
+  def initialize(runner_class, server)
     @runner_class = runner_class
+    @server = server
     @input_queue = Queue.new
     @output_queue = Queue.new
   end
 
   def start_runner
-    @runner_thread = Thread.new { @runner.run_each(@input_queue, @output_queue) }
+    @runner_thread = Thread.new do
+      @runner.run_each(@input_queue, @output_queue)
+    end
   end
 
-  def server
-    @server ||= TCPServer.new(LISTEN_IP, @port)
+  def handle_message(message)
+    case message
+    when DockerTest::Message::Item
+      handle_example(message.payload)
+    when DockerTest::Message::ZeroItems
+      handle_zero_items(message.payload)
+    when DockerTest::Message::Setup
+      handle_setup(message.payload)
+    else
+      DockerTest.logger.info("invalid message: #{message}")
+    end
   end
 
-  SELECT_TIMEOUT = 0.1
+  def handle_example(payload)
+    @input_queue << payload
+    publish_result
+  end
+
+  def handle_setup(payload)
+    DockerTest.logger.debug("setup arguments: #{payload}")
+    @runner = @runner_class.get_runner(payload)
+    start_runner
+  end
+
+  def handle_zero_items(payload)
+    @quit = true
+    @input_queue << DockerTest::Message::Stop.new
+    @runner_thread.join
+  end
+
+  def publish_result
+    result = @output_queue.pop
+    @server.return_result(result)
+  end
 
   def start
-    client = server.accept
-    quit = false
+    setup_message = @server.get_setup
+    handle_message(setup_message)
 
     loop do
-      if IO.select([client], nil, nil, SELECT_TIMEOUT)
-        raw_message = client.gets
-        next unless raw_message
-        message = Marshal.load(raw_message)
-        response = nil
-
-        puts "received message #{message.class}: #{message.payload.inspect}"
-
-        if message.instance_of?(DockerTest::Message::Exit)
-          @input_queue << message
-          @runner_thread.join
-          response = DockerTest::Message::Success.new
-          quit = true
-        elsif message.instance_of?(DockerTest::Message::Setup)
-          @runner = @runner_class.get_runner(message.payload)
-          start_runner
-          response = DockerTest::Message::Success.new
-        else
-          @input_queue << message
-          response = @output_queue.pop
-        end
-
-        client.puts(Marshal.dump(response))
-        break if quit
-      end
+      message = @server.get_item
+      handle_message(message)
+      break if @quit
     end
-
-    client.close
   ensure
-    @runner_thread.join
+    @runner_thread.join if @runner_thread && @runner_thread.alive?
   end
 
 end
