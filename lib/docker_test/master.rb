@@ -38,6 +38,7 @@ class DockerTest::Master
   end
 
   def setup
+    # TODO: apply to all workers
     worker = checkout_worker
     worker.send_message(@runner.setup_message) { return_worker(worker) }
   end
