@@ -6,7 +6,7 @@ class DockerTest::Server
     @results = Queue.new
     @mutex = Mutex.new
     @runner_setup = @runner.setup_message
-    @item_count = 0
+    @expected_result_count = 0
     @result_count = 0
   end
 
@@ -18,9 +18,9 @@ class DockerTest::Server
   def get_item
     @mutex.lock
     return DockerTest::Message::ZeroItems.new if finished?
-    @item_count += 1
-    message = DockerTest::Message::Item.new(@runner.pop)
-    DockerTest.logger.debug("emitting item message: #{message.payload.inspect}")
+    message = @runner.pop
+    @expected_result_count += message.num_responses
+    DockerTest.logger.debug("emitting item message: #{message.payload}")
     message
   ensure
     @mutex.unlock
@@ -41,7 +41,7 @@ class DockerTest::Server
   end
 
   def finished?
-    @runner.empty? && (@item_count == @result_count)
+    @runner.empty? && (@expected_result_count == @result_count)
   end
 
   def kill

@@ -2,10 +2,11 @@ module DockerTest
 
   class Message
 
-    attr_accessor :payload
+    attr_accessor :payload, :num_responses
 
     def initialize(payload = nil)
       @payload = payload
+      @num_responses = 1
     end
 
     class Error < Message; end

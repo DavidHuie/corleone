@@ -22,7 +22,10 @@ module DockerTest::Runner
     end
 
     def pop
-      item_queue.pop
+      item = item_queue.pop
+      message = DockerTest::Message::Item.new(item)
+      message.num_responses = item.examples.length
+      message
     end
 
     def item_queue
@@ -40,10 +43,8 @@ module DockerTest::Runner
     end
 
     def run_each(input_queue, output_queue)
-      formatter = DockerTest::Runner::RSpec::Formatter.new
-
       @configuration.reporter.report(0) do |reporter|
-        reporter.register_listener(formatter,
+        reporter.register_listener(DockerTest::Runner::RSpec::Formatter.new(output_queue),
                                    :example_failed,
                                    :example_pending,
                                    :example_passed)
@@ -53,24 +54,16 @@ module DockerTest::Runner
 
           hook_context = ::RSpec::Core::SuiteHookContext.new
           @configuration.hooks.run(:before, :suite, hook_context)
-          failures = false
+          responses = []
 
           loop do
             example = input_queue.pop
             DockerTest.logger.debug("rspec example received: #{example}")
             break if example.instance_of?(DockerTest::Message::Stop)
-
-            result = DockerTest::Message::Result.new
-            formatter.set_message_context(result)
-
-            value = example.run(reporter)
-            failures = true unless value
-
-            DockerTest.logger.debug("emitting result message: #{result.payload}")
-            output_queue << result
+            responses << example.run(reporter)
           end
 
-          @configuration.failure_exit_code if failures
+          @configuration.failure_exit_code if !responses.all?
         ensure
           @configuration.hooks.run(:after, :suite, hook_context)
         end
@@ -79,11 +72,11 @@ module DockerTest::Runner
 
     class Formatter
 
-      def set_message_context(message)
-        @message = message
+      def initialize(output_queue)
+        @output_queue = output_queue
       end
 
-      def cleanse_hash(h)
+      def self.cleanse_hash(h)
         new_h = h.clone
         new_h.each do |k, v|
           new_h.delete(k) if [Proc].include?(v.class)
@@ -95,7 +88,10 @@ module DockerTest::Runner
 
       [:example_passed, :example_failed, :example_pending].each do |m|
         define_method(m) do |msg|
-          @message.payload = cleanse_hash(msg.example.metadata)
+          result = DockerTest::Message::Result
+            .new(self.class.cleanse_hash(msg.example.metadata))
+          DockerTest.logger.debug("emitting result message: #{result.payload}")
+          @output_queue << result
         end
       end
 

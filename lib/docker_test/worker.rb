@@ -16,7 +16,7 @@ class DockerTest::Worker
   def handle_message(message)
     case message
     when DockerTest::Message::Item
-      handle_example(message.payload)
+      handle_example(message)
     when DockerTest::Message::ZeroItems
       handle_zero_items(message.payload)
     when DockerTest::Message::Setup
@@ -26,9 +26,9 @@ class DockerTest::Worker
     end
   end
 
-  def handle_example(payload)
-    @input_queue << payload
-    publish_result
+  def handle_example(message)
+    @input_queue << message.payload
+    message.num_responses.times { publish_result }
   end
 
   def handle_setup(payload)
@@ -57,7 +57,7 @@ class DockerTest::Worker
       break if @quit
     end
   ensure
-    @runner_thread.join if @runner_thread && @runner_thread.alive?
+    # @runner_thread.join if @runner_thread && @runner_thread.alive?
   end
 
 end
