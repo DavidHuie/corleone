@@ -2,16 +2,21 @@ class DockerTest::Docker::Image
 
   DOCKER_CODE_DIR = '/home/app'
 
-  attr_reader :alias, :container, :dependent_images, :links
+  attr_accessor :alias, :image, :local_code_directory,
+                :command, :container, :linked_images, :links
 
   def initialize(args = {})
     @alias = args[:alias]
     @image = args[:image]
     @local_code_directory = args[:local_code_directory]
     @command = args[:command]
-    @dependent_images = []
+    @linked_images = []
     @links = []
+    validate if @alias || @image
+  end
 
+  def validate
+    raise 'image required' unless @image
     raise 'alias required' unless @alias
   end
 
@@ -24,11 +29,11 @@ class DockerTest::Docker::Image
   end
 
   def add_linked_image(image)
-    @dependent_images << image
+    @linked_images << image
   end
 
   def create_linked_containers
-    @dependent_images.each do |image|
+    @linked_images.each do |image|
       image.create_container
       @links << "#{image.name}:#{image.alias}"
     end
@@ -37,13 +42,13 @@ class DockerTest::Docker::Image
 
   def create_container_args
     args = { 'Image' => @image, 'name' => name }
-    args['Cmd'] = @command if @command
+    args['Cmd'] = [@command] if @command
     args['Volumes'] = { DOCKER_CODE_DIR => {} } if @local_code_directory
     args
   end
 
   def start_container_args
-    args = { 'NetworkMode' => 'host' }
+    args = {}
     if @local_code_directory
       args['Binds'] = ["#{@local_code_directory}:#{DOCKER_CODE_DIR}"]
     end
@@ -61,6 +66,10 @@ class DockerTest::Docker::Image
   def kill
     DockerTest.logger.debug("destroying container: #{@container.id}")
     @container.delete(force: true)
+  end
+
+  def kill_linked
+    @linked_images.each { |i| i.kill }
   end
 
 end

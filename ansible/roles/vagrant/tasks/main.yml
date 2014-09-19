@@ -8,6 +8,7 @@
     - curl
     - git
     - iftop
+    - iproute
     - iotop
     - python-pycurl
     - sysstat

@@ -8,14 +8,14 @@ describe DockerTest::Docker::Image do
       DockerTest::Docker::Image.new(image: 'localhost:5000/docker_spec_test',
                                     alias: 'i1',
                                     local_code_directory: '/docker_test',
-                                    command: ['sleep 500'])
+                                    command: 'sleep 500')
     end
 
     let(:image_2) do
       DockerTest::Docker::Image.new(image: 'localhost:5000/docker_spec_test',
                                     alias: 'i2',
                                     local_code_directory: '/docker_test',
-                                    command: ['sleep 500'])
+                                    command: 'sleep 500')
     end
 
     after(:each) do

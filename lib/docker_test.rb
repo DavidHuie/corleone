@@ -1,8 +1,8 @@
-require 'securerandom'
 require 'base64'
 require 'docker'
 require 'drb/drb'
 require 'logger'
+require 'securerandom'
 
 module DockerTest
 
@@ -14,7 +14,8 @@ module DockerTest
 
 end
 
+require 'docker_test/config'
 require 'docker_test/server'
 require 'docker_test/message'
 require 'docker_test/worker'
-require 'docker_test/docker/container_manager'
+require 'docker_test/docker/image'

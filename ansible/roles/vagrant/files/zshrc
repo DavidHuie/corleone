@@ -7,7 +7,7 @@ source $ZSH/oh-my-zsh.sh
 
 export TERM=xterm-256color
 
-PATH=/usr/local/bin:/usr/bin:/bin:/usr/bin/X11
+PATH=/usr/local/bin:/usr/bin:/bin:/usr/bin/X11:/usr/local/sbin:/usr/sbin:/sbin
 PATH=$PATH:/home/vagrant/.rvm/bin
 
 export PATH

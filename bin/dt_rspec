@@ -3,12 +3,24 @@
 require 'docker_test'
 require 'docker_test/emitter/rspec'
 
-SERVER_URI = ENV['DOCKER_TEST_SERVER_URI'] || 'druby://localhost:7000'
+SERVER_URI = 'druby://0.0.0.0:7000'
 
+config_file = ARGV.shift
+
+# start server
 emitter = DockerTest::Emitter::RSpec.new(ARGV)
 server = DockerTest::Server.new(emitter, SERVER_URI)
 server.start
 
-loop do
-  server.alive? ? sleep(1) : exit(0)
+# launch containers
+config = DockerTest::Config.new
+config.instance_eval(File.read(config_file), config_file)
+config.image.create_linked_containers
+config.image.create_container
+
+begin
+  loop { server.alive? ? sleep(1) : break }
+ensure
+  config.image.kill
+  config.image.kill_linked
 end
