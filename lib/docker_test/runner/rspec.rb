@@ -17,22 +17,17 @@ module DockerTest::Runner
                                    :example_failed,
                                    :example_pending,
                                    :example_passed)
-
         begin
           DockerTest.logger.debug("starting rspec runner")
 
           hook_context = ::RSpec::Core::SuiteHookContext.new
           configuration.hooks.run(:before, :suite, hook_context)
-          responses = []
-
           loop do
             example = input_queue.pop
             DockerTest.logger.debug("rspec example received: #{example}")
             break if example.instance_of?(DockerTest::Message::Stop)
-            responses << example.run(reporter)
+            example.run(reporter)
           end
-
-          configuration.failure_exit_code if !responses.all?
         ensure
           configuration.hooks.run(:after, :suite, hook_context)
         end

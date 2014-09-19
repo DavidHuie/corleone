@@ -8,9 +8,7 @@ class DockerTest::Worker
   end
 
   def start_runner
-    @runner_thread = Thread.new do
-      @runner.run_each(@input_queue, @output_queue)
-    end
+    @runner_thread = Thread.new { @runner.run_each(@input_queue, @output_queue) }
   end
 
   def handle_message(message)
