@@ -17,7 +17,7 @@ class DockerTest::Server
 
   def get_item
     @mutex.lock
-    return DockerTest::Message::ZeroItems.new if finished?
+    return DockerTest::Message::ZeroItems.new if @runner.empty?
     message = @runner.pop
     @expected_result_count += message.num_responses
     DockerTest.logger.debug("emitting item message: #{message.payload}")
