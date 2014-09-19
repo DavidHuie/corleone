@@ -57,7 +57,7 @@ class DockerTest::Worker
       break if @quit
     end
   ensure
-    # @runner_thread.join if @runner_thread && @runner_thread.alive?
+    @runner_thread.join if @runner_thread && @runner_thread.alive?
   end
 
 end
