@@ -1,0 +1,21 @@
+---
+# tasks file for docker
+
+- name: add docker key
+  apt_key: id=36A1D7869245C8950F966E92D8576A8BA88D21E9 keyserver=keyserver.ubuntu.com  state=present
+
+- name: add docker repository
+  apt_repository: repo='deb http://get.docker.io/ubuntu docker main' state=present
+
+- name: install docker
+  apt: pkg={{ item }} update_cache=yes state=latest
+  with_items:
+    - lxc-docker
+
+- name: add users to docker group
+  with_items: docker_group_users
+  when: docker_group_users
+  user: groups='docker'
+        append=yes
+        name={{ item }}
+        state=present

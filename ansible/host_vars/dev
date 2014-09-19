@@ -1,0 +1,11 @@
+---
+
+oh_my_zsh_install_path: /home/vagrant/.oh-my-zsh
+
+ruby_project_dir: /docker_test
+ruby_version: ruby-2.1.2
+
+docker_registry_storage_directory: /registry
+
+docker_group_users:
+  - vagrant
