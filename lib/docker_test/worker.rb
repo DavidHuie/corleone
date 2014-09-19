@@ -44,8 +44,7 @@ class DockerTest::Worker
   end
 
   def publish_result
-    result = @output_queue.pop
-    @server.return_result(result)
+    @server.return_result(@output_queue.pop)
   end
 
   def start

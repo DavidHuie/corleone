@@ -40,10 +40,13 @@ module DockerTest::Runner
     end
 
     def run_each(input_queue, output_queue)
-      # formatter = DockerTest::Runner::RSpec::Formatter.new
+      formatter = DockerTest::Runner::RSpec::Formatter.new
 
       @configuration.reporter.report(0) do |reporter|
-        # reporter.register_listener(formatter, :example_failed)
+        reporter.register_listener(formatter,
+                                   :example_failed,
+                                   :example_pending,
+                                   :example_passed)
 
         begin
           DockerTest.logger.debug("starting rspec runner")
@@ -56,11 +59,15 @@ module DockerTest::Runner
             example = input_queue.pop
             DockerTest.logger.debug("rspec example received: #{example}")
             break if example.instance_of?(DockerTest::Message::Stop)
-            # formatter.set_message_context(message)
+
+            result = DockerTest::Message::Result.new
+            formatter.set_message_context(result)
+
             value = example.run(reporter)
             failures = true unless value
-            DockerTest.logger.debug("emitting result message: #{value}")
-            output_queue << DockerTest::Message::Result.new(value)
+
+            DockerTest.logger.debug("emitting result message: #{result.payload}")
+            output_queue << result
           end
 
           @configuration.failure_exit_code if failures
@@ -73,15 +80,23 @@ module DockerTest::Runner
     class Formatter
 
       def set_message_context(message)
-        # @message = message
+        @message = message
       end
 
-      def example_failed(notification)
-        @message.metadata = {
-          exception: notification.exception,
-          message_lines: notification.message_lines,
-          formatted_backtrace: notification.formatted_backtrace,
-        }
+      def cleanse_hash(h)
+        new_h = h.clone
+        new_h.each do |k, v|
+          new_h.delete(k) if [Proc].include?(v.class)
+          new_h[k] = cleanse_hash(v) if v.instance_of?(Hash)
+        end
+        new_h.default_proc = nil
+        new_h
+      end
+
+      [:example_passed, :example_failed, :example_pending].each do |m|
+        define_method(m) do |msg|
+          @message.payload = cleanse_hash(msg.example.metadata)
+        end
       end
 
     end

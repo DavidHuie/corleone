@@ -28,15 +28,14 @@ class DockerTest::Server
 
   def return_result(result)
     @mutex.lock
-    DockerTest.logger.debug("result message received: #{result}")
-
     if result.instance_of?(DockerTest::Message::Result)
+      DockerTest.logger.debug("result message received: #{result.payload}")
       @results << result.payload
       @result_count += 1
       return
     end
 
-    raise "result error: #{result.payload}"
+    raise "result error: #{result}"
   ensure
     @mutex.unlock
   end
