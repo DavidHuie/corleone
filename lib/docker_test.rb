@@ -16,4 +16,4 @@ end
 require 'docker_test/server'
 require 'docker_test/message'
 require 'docker_test/worker'
-require 'docker_test/docker/image'
+require 'docker_test/docker/container_manager'
