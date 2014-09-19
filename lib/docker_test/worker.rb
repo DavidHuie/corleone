@@ -33,7 +33,7 @@ class DockerTest::Worker
 
   def handle_setup(payload)
     DockerTest.logger.debug("setup arguments: #{payload}")
-    @runner = @runner_class.get_runner(payload)
+    @runner = @runner_class.new(payload)
     start_runner
   end
 

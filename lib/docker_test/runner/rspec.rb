@@ -1,49 +1,18 @@
 require 'stringio'
 require 'rspec/core'
 
+require 'docker_test/emitter/rspec'
+
 module DockerTest::Runner
 
-  class RSpec < ::RSpec::Core::Runner
+  class RSpec < DockerTest::Emitter::RSpec
 
-    def self.get_runner(args)
-      options = ::RSpec::Core::ConfigurationOptions.new(args)
-      runner = new(options)
-      runner.setup(runner.output_buffer, runner.output_buffer)
-      runner.process_items
-      runner
-    end
-
-    def output_buffer
-      @output_buffer ||= StringIO.new
-    end
-
-    def setup_message
-      DockerTest::Message::Setup.new(ARGV)
-    end
-
-    def pop
-      item = item_queue.pop
-      message = DockerTest::Message::Item.new(item)
-      message.num_responses = item.examples.length
-      message
-    end
-
-    def item_queue
-      @item_queue ||= Queue.new
-    end
-
-    def empty?
-      item_queue.empty?
-    end
-
-    def process_items
-      @world.ordered_example_groups.each do |example|
-        item_queue << example
-      end
+    def configuration
+      @rspec.instance_variable_get("@configuration")
     end
 
     def run_each(input_queue, output_queue)
-      @configuration.reporter.report(0) do |reporter|
+      configuration.reporter.report(0) do |reporter|
         reporter.register_listener(DockerTest::Runner::RSpec::Formatter.new(output_queue),
                                    :example_failed,
                                    :example_pending,
@@ -53,7 +22,7 @@ module DockerTest::Runner
           DockerTest.logger.debug("starting rspec runner")
 
           hook_context = ::RSpec::Core::SuiteHookContext.new
-          @configuration.hooks.run(:before, :suite, hook_context)
+          configuration.hooks.run(:before, :suite, hook_context)
           responses = []
 
           loop do
@@ -63,9 +32,9 @@ module DockerTest::Runner
             responses << example.run(reporter)
           end
 
-          @configuration.failure_exit_code if !responses.all?
+          configuration.failure_exit_code if !responses.all?
         ensure
-          @configuration.hooks.run(:after, :suite, hook_context)
+          configuration.hooks.run(:after, :suite, hook_context)
         end
       end
     end

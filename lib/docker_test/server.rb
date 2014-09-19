@@ -1,24 +1,24 @@
 class DockerTest::Server
 
-  def initialize(runner, uri)
-    @runner = runner
+  def initialize(emitter, uri)
+    @emitter = emitter
     @uri = uri
     @results = Queue.new
     @mutex = Mutex.new
-    @runner_setup = @runner.setup_message
+    @emitter_setup = @emitter.setup_message
     @expected_result_count = 0
     @result_count = 0
   end
 
   def get_setup
-    DockerTest.logger.debug("emitting setup message: #{@runner_setup.payload}")
-    @runner_setup
+    DockerTest.logger.debug("emitting setup message: #{@emitter_setup.payload}")
+    @emitter_setup
   end
 
   def get_item
     @mutex.lock
-    return DockerTest::Message::ZeroItems.new if @runner.empty?
-    message = @runner.pop
+    return DockerTest::Message::ZeroItems.new if @emitter.empty?
+    message = @emitter.pop
     @expected_result_count += message.num_responses
     DockerTest.logger.debug("emitting item message: #{message.payload}")
     message
@@ -41,7 +41,7 @@ class DockerTest::Server
   end
 
   def finished?
-    @runner.empty? && (@expected_result_count == @result_count)
+    @emitter.empty? && (@expected_result_count == @result_count)
   end
 
   def kill

@@ -1,12 +1,12 @@
 #!/usr/bin/env ruby
 
 require 'docker_test'
-require 'docker_test/runner/rspec'
+require 'docker_test/emitter/rspec'
 
 SERVER_URI = ENV['DOCKER_TEST_SERVER_URI'] || 'druby://localhost:7000'
 
-runner = DockerTest::Runner::RSpec.get_runner(ARGV)
-server = DockerTest::Server.new(runner, SERVER_URI)
+emitter = DockerTest::Emitter::RSpec.new(ARGV)
+server = DockerTest::Server.new(emitter, SERVER_URI)
 server.start
 
 loop do
