@@ -1,6 +1,7 @@
 require 'base64'
-require 'logger'
+require 'docker'
 require 'drb/drb'
+require 'logger'
 
 module DockerTest
 
@@ -8,8 +9,11 @@ module DockerTest
     @logger ||= Logger.new(STDOUT)
   end
 
+  module Docker; end
+
 end
 
 require 'docker_test/server'
 require 'docker_test/message'
 require 'docker_test/worker'
+require 'docker_test/docker/image'
