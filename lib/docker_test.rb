@@ -1,3 +1,4 @@
+require 'securerandom'
 require 'base64'
 require 'docker'
 require 'drb/drb'

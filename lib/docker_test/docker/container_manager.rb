@@ -1,34 +1,66 @@
-class DockerTest::Docker::ContainerManager
+class DockerTest::Docker::Image
 
   DOCKER_CODE_DIR = '/home/app'
 
-  def initialize(opts = {})
-    @image = opts[:image]
-    @local_code_directory = opts[:local_code_directory]
-    @commands = opts[:commands]
-    @containers = []
+  attr_reader :alias, :container, :dependent_images, :links
+
+  def initialize(args = {})
+    @alias = args[:alias]
+    @image = args[:image]
+    @local_code_directory = args[:local_code_directory]
+    @command = args[:command]
+    @dependent_images = []
+    @links = []
+
+    raise 'alias required' unless @alias
+  end
+
+  def name
+    @name ||= @alias + '_' + SecureRandom.hex(6)
   end
 
   def pull
-    Docker::Image.import(@image)
+    Docker::Image.create('fromImage' => @image)
   end
 
-  def create_containers(n)
-    n.times { create_container }
+  def add_linked_image(image)
+    @dependent_images << image
+  end
+
+  def create_linked_containers
+    @dependent_images.each do |image|
+      image.create_container
+      @links << "#{image.name}:#{image.alias}"
+    end
+    DockerTest.logger.debug("#{name} links: #{@links}")
+  end
+
+  def create_container_args
+    args = { 'Image' => @image, 'name' => name }
+    args['Cmd'] = @command if @command
+    args['Volumes'] = { DOCKER_CODE_DIR => {} } if @local_code_directory
+    args
+  end
+
+  def start_container_args
+    args = { 'NetworkMode' => 'host' }
+    if @local_code_directory
+      args['Binds'] = ["#{@local_code_directory}:#{DOCKER_CODE_DIR}"]
+    end
+    args['Links'] = links if links.any?
+    args
   end
 
   def create_container
-    cmd = @commands.join(' && ')
-    container = Docker::Container.create('Image' => @image,
-                                         'Cmd' => cmd,
-                                         'Volumes' => { DOCKER_CODE_DIR => {} })
-    container.start('Binds' => ["#{@local_code_directory}:#{DOCKER_CODE_DIR}"],
-                    'NetworkMode' => 'host')
-    @containers << container
+    @container = Docker::Container.create(create_container_args)
+    @container.start(start_container_args)
+    DockerTest.logger.debug("started container: #{container.id}")
+    @container
   end
 
-  def kill_containers
-    @containers.each { |c| c.delete(:force => true) }
+  def kill
+    DockerTest.logger.debug("destroying container: #{@container.id}")
+    @container.delete(force: true)
   end
 
 end
