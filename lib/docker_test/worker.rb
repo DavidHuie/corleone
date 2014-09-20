@@ -23,7 +23,7 @@ class DockerTest::Worker
     when DockerTest::Message::ZeroItems
       handle_zero_items(message.payload)
     when DockerTest::Message::RunnerArgs
-      handle_setup(message.payload)
+      handle_runner_args(message.payload)
     else
       logger.warn("invalid received message: #{message}")
     end
@@ -34,8 +34,8 @@ class DockerTest::Worker
     message.num_responses.times { publish_result }
   end
 
-  def handle_setup(payload)
-    logger.debug("setup arguments: #{payload}")
+  def handle_runner_args(payload)
+    logger.debug("runner_args arguments: #{payload}")
     @runner = @runner_class.new(payload, logger)
     start_runner
   end
@@ -52,6 +52,12 @@ class DockerTest::Worker
 
   def start
     logger.info("starting worker")
+
+    setup_msg = @server.get_setup_file
+    @setup = DockerTest::Setup.new(logger)
+    @setup.instance_eval(File.read(setup_msg.payload), setup_msg.payload) if setup_msg
+    @setup.setup
+
     runner_args = @server.get_runner_args
     handle_message(runner_args)
 
@@ -61,6 +67,7 @@ class DockerTest::Worker
       break if @quit
     end
   ensure
+    @setup.teardown
     @runner_thread.join if @runner_thread && @runner_thread.alive?
   end
 

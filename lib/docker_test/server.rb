@@ -1,5 +1,7 @@
 class DockerTest::Server
 
+  attr_accessor :setup_file
+
   def initialize(emitter, collector, uri)
     @emitter = emitter
     @collector = collector
@@ -17,6 +19,12 @@ class DockerTest::Server
   def log(type, message)
     logger.send(type, message)
     return
+  end
+
+  def get_setup_file
+    msg = DockerTest::Message::SetupFile.new(@setup_file)
+    logger.debug("emitting setup_file message: #{msg.payload}")
+    msg
   end
 
   def get_runner_args

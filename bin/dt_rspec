@@ -9,6 +9,7 @@ require 'docker_test/emitter/rspec'
 SERVER_URI = 'druby://0.0.0.0:7000'
 
 config_file = ARGV.shift
+setup_file = ARGV.shift
 
 # parse config file
 config = DockerTest::Config.new
@@ -18,6 +19,7 @@ config.instance_eval(File.read(config_file), config_file)
 collector = DockerTest::Collector::RSpec.new
 emitter = DockerTest::Emitter::RSpec.new(ARGV)
 server = DockerTest::Server.new(emitter, collector, SERVER_URI)
+server.setup_file = setup_file
 server.start
 
 # pull all image repositories
