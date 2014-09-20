@@ -21,8 +21,8 @@ module DockerTest::Emitter
       @output_buffer ||= StringIO.new
     end
 
-    def args
-      DockerTest::Message::RunnerArgs.new(@args)
+    def runner_args
+      @runner_args ||= DockerTest::Message::RunnerArgs.new(@args)
     end
 
     def pop
