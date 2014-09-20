@@ -53,10 +53,10 @@ class DockerTest::Worker
   def start
     logger.info("starting worker")
 
-    setup_msg = @server.get_setup_file
-    @setup = DockerTest::Setup.new(logger)
-    @setup.instance_eval(File.read(setup_msg.payload), setup_msg.payload) if setup_msg
-    @setup.setup
+    config_msg = @server.get_config_file
+    @config = DockerTest::Config.new(logger)
+    @config.instance_eval(File.read(config_msg.payload), config_msg.payload) if config_msg
+    @config.setup
 
     runner_args = @server.get_runner_args
     handle_message(runner_args)
@@ -67,7 +67,7 @@ class DockerTest::Worker
       break if @quit
     end
   ensure
-    @setup.teardown
+    @config.teardown
     @runner_thread.join if @runner_thread && @runner_thread.alive?
   end
 

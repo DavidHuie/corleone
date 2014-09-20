@@ -1,6 +1,6 @@
 class DockerTest::Server
 
-  attr_accessor :setup_file
+  attr_accessor :config_file
 
   def initialize(emitter, collector, uri)
     @emitter = emitter
@@ -21,9 +21,9 @@ class DockerTest::Server
     return
   end
 
-  def get_setup_file
-    msg = DockerTest::Message::SetupFile.new(@setup_file)
-    logger.debug("emitting setup_file message: #{msg.payload}")
+  def get_config_file
+    msg = DockerTest::Message::ConfigFile.new(@config_file)
+    logger.debug("emitting config_file message: #{msg.payload}")
     msg
   end
 

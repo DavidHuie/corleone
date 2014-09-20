@@ -15,3 +15,11 @@ linked_image do |config|
   config.local_code_directory = '/docker_test'
   config.command = 'sleep 500'
 end
+
+define_setup do
+  puts 'setup'
+end
+
+define_teardown do
+  puts 'teardown'
+end
