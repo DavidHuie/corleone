@@ -3,6 +3,7 @@ require 'docker'
 require 'drb/drb'
 require 'logger'
 require 'securerandom'
+require 'set'
 
 module DockerTest
 

@@ -1,3 +1,7 @@
+docker_settings do |config|
+  config.num_containers = 2
+end
+
 docker_image do |config|
   config.alias = 'test_spec'
   config.image = 'localhost:5000/docker_spec_test'

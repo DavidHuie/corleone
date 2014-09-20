@@ -3,5 +3,5 @@
 set -x -e
 
 cd /home/app
-bundle install --jobs=8
+bundle install --without=development
 sudo -u app bundle exec $@

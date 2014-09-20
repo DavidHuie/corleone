@@ -1,10 +1,15 @@
 class DockerTest::Worker
 
   def initialize(runner_class, server)
+    @name = `hostname`.strip
     @runner_class = runner_class
     @server = server
     @input_queue = Queue.new
     @output_queue = Queue.new
+  end
+
+  def logger
+    @logger ||= RemoteServerLogger.new("WORKER #{@name}", @server)
   end
 
   def start_runner
@@ -20,7 +25,7 @@ class DockerTest::Worker
     when DockerTest::Message::Setup
       handle_setup(message.payload)
     else
-      DockerTest.logger.info("invalid message: #{message}")
+      logger.warn("invalid received message: #{message}")
     end
   end
 
@@ -30,8 +35,8 @@ class DockerTest::Worker
   end
 
   def handle_setup(payload)
-    DockerTest.logger.debug("setup arguments: #{payload}")
-    @runner = @runner_class.new(payload)
+    logger.debug("setup arguments: #{payload}")
+    @runner = @runner_class.new(payload, logger)
     start_runner
   end
 
@@ -46,6 +51,8 @@ class DockerTest::Worker
   end
 
   def start
+    logger.info("starting worker")
+
     setup_message = @server.get_setup
     handle_message(setup_message)
 
@@ -56,6 +63,25 @@ class DockerTest::Worker
     end
   ensure
     @runner_thread.join if @runner_thread && @runner_thread.alive?
+  end
+
+  class RemoteServerLogger
+
+    def initialize(prefix, server)
+      @prefix = prefix
+      @server = server
+    end
+
+    def wrapped_message(msg)
+      "#{@prefix} - #{msg}"
+    end
+
+    [:debug, :info, :warn].each do |name|
+      define_method(name) do |msg|
+        @server.log(name, wrapped_message(msg))
+      end
+    end
+
   end
 
 end

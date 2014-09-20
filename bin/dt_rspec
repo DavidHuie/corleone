@@ -1,26 +1,41 @@
 #!/usr/bin/env ruby
 
 require 'docker_test'
+require 'docker_test/collector/rspec'
 require 'docker_test/emitter/rspec'
+
+# DockerTest.logger.level = Logger::INFO
 
 SERVER_URI = 'druby://0.0.0.0:7000'
 
 config_file = ARGV.shift
 
 # start server
+collector = DockerTest::Collector::RSpec.new
 emitter = DockerTest::Emitter::RSpec.new(ARGV)
-server = DockerTest::Server.new(emitter, SERVER_URI)
+server = DockerTest::Server.new(emitter, collector, SERVER_URI)
 server.start
 
-# launch containers
+# parse config file
 config = DockerTest::Config.new
 config.instance_eval(File.read(config_file), config_file)
-config.image.create_linked_containers
-config.image.create_container
 
+# pull all image repositories
+config.image.pull_all
+
+# launch containers
+images = []
+config.settings.num_containers.times do
+  im = config.image.clone
+  images << im
+  im.create_linked_containers
+  im.create_container
+end
+
+# run loop
 begin
   loop { server.alive? ? sleep(1) : break }
+  server.summarize
 ensure
-  config.image.kill
-  config.image.kill_linked
+  images.each { |i| i.kill_all }
 end

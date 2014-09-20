@@ -1,17 +1,26 @@
 class DockerTest::Server
 
-  def initialize(emitter, uri)
+  def initialize(emitter, collector, uri)
     @emitter = emitter
+    @collector = collector
     @uri = uri
-    @results = Queue.new
     @mutex = Mutex.new
     @emitter_setup = @emitter.setup_message
     @expected_result_count = 0
     @result_count = 0
   end
 
+  def logger
+    DockerTest.logger
+  end
+
+  def log(type, message)
+    logger.send(type, message)
+    return
+  end
+
   def get_setup
-    DockerTest.logger.debug("emitting setup message: #{@emitter_setup.payload}")
+    logger.debug("emitting setup message: #{@emitter_setup.payload}")
     @emitter_setup
   end
 
@@ -20,7 +29,7 @@ class DockerTest::Server
     return DockerTest::Message::ZeroItems.new if @emitter.empty?
     message = @emitter.pop
     @expected_result_count += message.num_responses
-    DockerTest.logger.debug("emitting item message: #{message.payload}")
+    logger.debug("emitting item message: #{message.payload}")
     message
   ensure
     @mutex.unlock
@@ -29,8 +38,8 @@ class DockerTest::Server
   def return_result(result)
     @mutex.lock
     if result.instance_of?(DockerTest::Message::Result)
-      DockerTest.logger.debug("result message received: #{result.payload}")
-      @results << result.payload
+      logger.debug("result message received: #{result.payload}")
+      @collector.process_result(result.payload)
       @result_count += 1
       return
     end
@@ -57,9 +66,13 @@ class DockerTest::Server
   end
 
   def start
-    DockerTest.logger.info("starting server")
+    logger.info("starting server")
     DRb.start_service(@uri, self)
     @thread = DRb.thread
+  end
+
+  def summarize
+    @collector.summarize
   end
 
 end

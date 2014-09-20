@@ -3,7 +3,7 @@ class DockerTest::Docker::Image
   DOCKER_CODE_DIR = '/home/app'
 
   attr_accessor :alias, :image, :local_code_directory,
-                :command, :container, :linked_images, :links
+                :command, :linked_images, :links, :container
 
   def initialize(args = {})
     @alias = args[:alias]
@@ -12,7 +12,21 @@ class DockerTest::Docker::Image
     @command = args[:command]
     @linked_images = []
     @links = []
+
     validate if @alias || @image
+  end
+
+  def args
+    { alias: self.alias,
+      image: image,
+      local_code_directory: local_code_directory,
+      command: command }
+  end
+
+  def clone
+    c = self.class.new(args)
+    @linked_images.each { |i| c.add_linked_image(i.clone) }
+    c
   end
 
   def validate
@@ -24,8 +38,17 @@ class DockerTest::Docker::Image
     @name ||= @alias + '_' + SecureRandom.hex(6)
   end
 
-  def pull
-    Docker::Image.create('fromImage' => @image)
+  def all_image_repos
+    images = Set.new([image])
+    @linked_images.each { |i| images.union(i.all_image_repos) }
+    images
+  end
+
+  def pull_all
+    all_image_repos.each do |repo|
+      DockerTest.logger.info("pulling image: #{repo}")
+      Docker::Image.create('fromImage' => repo)
+    end
   end
 
   def add_linked_image(image)
@@ -41,7 +64,7 @@ class DockerTest::Docker::Image
   end
 
   def create_container_args
-    args = { 'Image' => @image, 'name' => name }
+    args = { 'Image' => @image, 'name' => name, 'Hostname' => name }
     args['Cmd'] = [@command] if @command
     args['Volumes'] = { DOCKER_CODE_DIR => {} } if @local_code_directory
     args
@@ -59,8 +82,7 @@ class DockerTest::Docker::Image
   def create_container
     @container = Docker::Container.create(create_container_args)
     @container.start(start_container_args)
-    DockerTest.logger.debug("started container: #{container.id}")
-    @container
+    DockerTest.logger.info("container launched: #{name}")
   end
 
   def kill
@@ -68,8 +90,9 @@ class DockerTest::Docker::Image
     @container.delete(force: true)
   end
 
-  def kill_linked
-    @linked_images.each { |i| i.kill }
+  def kill_all
+    kill
+    linked_images.each { |i| i.kill_all }
   end
 
 end

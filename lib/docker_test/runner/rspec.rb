@@ -7,24 +7,29 @@ module DockerTest::Runner
 
   class RSpec < DockerTest::Emitter::RSpec
 
+    def initialize(args, logger)
+      super(args)
+      @logger = logger
+    end
+
     def configuration
       @rspec.instance_variable_get("@configuration")
     end
 
     def run_each(input_queue, output_queue)
       configuration.reporter.report(0) do |reporter|
-        reporter.register_listener(DockerTest::Runner::RSpec::Formatter.new(output_queue),
+        reporter.register_listener(Formatter.new(output_queue, @logger),
                                    :example_failed,
                                    :example_pending,
                                    :example_passed)
         begin
-          DockerTest.logger.debug("starting rspec runner")
+          @logger.debug("starting rspec runner")
 
           hook_context = ::RSpec::Core::SuiteHookContext.new
           configuration.hooks.run(:before, :suite, hook_context)
           loop do
             example = input_queue.pop
-            DockerTest.logger.debug("rspec example received: #{example}")
+            @logger.debug("rspec example received: #{example}")
             break if example.instance_of?(DockerTest::Message::Stop)
             example.run(reporter)
           end
@@ -36,8 +41,9 @@ module DockerTest::Runner
 
     class Formatter
 
-      def initialize(output_queue)
+      def initialize(output_queue, logger)
         @output_queue = output_queue
+        @logger = logger
       end
 
       def self.cleanse_hash(h)
@@ -54,7 +60,7 @@ module DockerTest::Runner
         define_method(m) do |msg|
           result = DockerTest::Message::Result
             .new(self.class.cleanse_hash(msg.example.metadata))
-          DockerTest.logger.debug("emitting result message: #{result.payload}")
+          @logger.debug("emitting result message: #{result.payload}")
           @output_queue << result
         end
       end

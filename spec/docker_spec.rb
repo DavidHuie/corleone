@@ -19,8 +19,7 @@ describe DockerTest::Docker::Image do
     end
 
     after(:each) do
-      image_1.kill
-      image_2.kill
+      image_1.kill_all
     end
 
     it 'should link containers correctly' do
