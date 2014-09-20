@@ -3,12 +3,14 @@ class DockerTest::Docker::Image
   DOCKER_CODE_DIR = '/home/app'
 
   attr_accessor :alias, :image, :local_code_directory,
-                :command, :linked_images, :links, :container
+                :command, :linked_images, :links, :container,
+                :bundle_directory
 
   def initialize(args = {})
     @alias = args[:alias]
     @image = args[:image]
     @local_code_directory = args[:local_code_directory]
+    @bundle_directory = args[:bundle_code_directory] || 'vendor/bundle'
     @command = args[:command]
     @linked_images = []
     @links = []
@@ -64,16 +66,28 @@ class DockerTest::Docker::Image
   end
 
   def create_container_args
-    args = { 'Image' => @image, 'name' => name, 'Hostname' => name }
+    args = { 'Image' => @image, 'name' => name, 'Hostname' => name, 'Volumes' => {} }
     args['Cmd'] = [@command] if @command
-    args['Volumes'] = { DOCKER_CODE_DIR => {} } if @local_code_directory
+    args['Volumes'][DOCKER_CODE_DIR] = {} if @local_code_directory
+    args['Volumes'][docker_bundle_dir] = {} if @bundle_directory
     args
   end
 
+  def docker_bundle_dir
+    File.join(DOCKER_CODE_DIR, @bundle_directory)
+  end
+
+  def local_bundle_dir
+    File.join(@local_code_directory, @bundle_directory)
+  end
+
   def start_container_args
-    args = {}
+    args = { 'Binds' => [] }
     if @local_code_directory
-      args['Binds'] = ["#{@local_code_directory}:#{DOCKER_CODE_DIR}"]
+      args['Binds'] << "#{@local_code_directory}:#{DOCKER_CODE_DIR}"
+    end
+    if @bundle_directory
+      args['Binds'] << "#{local_bundle_dir}:#{docker_bundle_dir}"
     end
     args['Links'] = links if links.any?
     args
