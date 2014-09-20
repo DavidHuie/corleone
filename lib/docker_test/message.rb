@@ -12,7 +12,7 @@ module DockerTest
     class Error < Message; end
     class Item < Message; end
     class Result < Message; end
-    class Setup < Message; end
+    class RunnerArgs < Message; end
     class Stop < Message; end
     class ZeroItems < Message; end
 

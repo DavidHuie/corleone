@@ -1,11 +1,13 @@
 class DockerTest::Server
 
+  attr_accessor :setup
+
   def initialize(emitter, collector, uri)
     @emitter = emitter
     @collector = collector
     @uri = uri
     @mutex = Mutex.new
-    @emitter_setup = @emitter.setup_message
+    @emitter_args = @emitter.args
     @expected_result_count = 0
     @result_count = 0
   end
@@ -20,8 +22,12 @@ class DockerTest::Server
   end
 
   def get_setup
-    logger.debug("emitting setup message: #{@emitter_setup.payload}")
-    @emitter_setup
+    @setup
+  end
+
+  def get_runner_args
+    logger.debug("emitting setup message: #{@emitter_args.payload}")
+    @emitter_args
   end
 
   def get_item

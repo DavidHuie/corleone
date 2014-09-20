@@ -86,7 +86,7 @@ class DockerTest::Docker::Image
   end
 
   def kill
-    DockerTest.logger.debug("destroying container: #{@container.id}")
+    DockerTest.logger.debug("destroying container: #{name}")
     @container.delete(force: true)
   end
 

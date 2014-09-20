@@ -22,7 +22,7 @@ class DockerTest::Worker
       handle_example(message)
     when DockerTest::Message::ZeroItems
       handle_zero_items(message.payload)
-    when DockerTest::Message::Setup
+    when DockerTest::Message::RunnerArgs
       handle_setup(message.payload)
     else
       logger.warn("invalid received message: #{message}")
@@ -52,9 +52,8 @@ class DockerTest::Worker
 
   def start
     logger.info("starting worker")
-
-    setup_message = @server.get_setup
-    handle_message(setup_message)
+    runner_args = @server.get_runner_args
+    handle_message(runner_args)
 
     loop do
       message = @server.get_item

@@ -10,15 +10,15 @@ SERVER_URI = 'druby://0.0.0.0:7000'
 
 config_file = ARGV.shift
 
+# parse config file
+config = DockerTest::Config.new
+config.instance_eval(File.read(config_file), config_file)
+
 # start server
 collector = DockerTest::Collector::RSpec.new
 emitter = DockerTest::Emitter::RSpec.new(ARGV)
 server = DockerTest::Server.new(emitter, collector, SERVER_URI)
 server.start
-
-# parse config file
-config = DockerTest::Config.new
-config.instance_eval(File.read(config_file), config_file)
 
 # pull all image repositories
 config.image.pull_all
