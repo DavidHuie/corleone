@@ -1,5 +1,5 @@
 docker_settings do |config|
-  config.num_containers = 8
+  config.num_containers = 4
 end
 
 docker_image do |config|
