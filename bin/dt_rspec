@@ -4,7 +4,9 @@ require 'docker_test'
 require 'docker_test/collector/rspec'
 require 'docker_test/emitter/rspec'
 
-# DockerTest.logger.level = Logger::INFO
+if ENV['DEBUG_LOG'] != '1'
+  DockerTest.logger.level = Logger::INFO
+end
 
 SERVER_URI = 'druby://0.0.0.0:7000'
 
