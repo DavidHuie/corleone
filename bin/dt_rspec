@@ -23,15 +23,11 @@ server = DockerTest::Server.new(emitter, collector, SERVER_URI)
 server.config_file = config_file
 server.start
 
-# pull all image repositories
-config.image.pull_all
-
 # launch containers
 images = []
 config.settings.num_containers.times do
   im = config.image.clone
   images << im
-  im.create_linked_containers
   im.create_container
 end
 

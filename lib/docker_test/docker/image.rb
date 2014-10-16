@@ -3,8 +3,7 @@ class DockerTest::Docker::Image
   DOCKER_CODE_DIR = '/home/app'
 
   attr_accessor :alias, :image, :local_code_directory,
-                :command, :linked_images, :links, :container,
-                :bundle_directory
+                :command, :container, :bundle_directory
 
   def initialize(args = {})
     @alias = args[:alias]
@@ -12,8 +11,6 @@ class DockerTest::Docker::Image
     @local_code_directory = args[:local_code_directory]
     @bundle_directory = args[:bundle_code_directory] || 'vendor/bundle'
     @command = args[:command]
-    @linked_images = []
-    @links = []
 
     validate if @alias || @image
   end
@@ -26,9 +23,7 @@ class DockerTest::Docker::Image
   end
 
   def clone
-    c = self.class.new(args)
-    @linked_images.each { |i| c.add_linked_image(i.clone) }
-    c
+    self.class.new(args)
   end
 
   def validate
@@ -41,9 +36,7 @@ class DockerTest::Docker::Image
   end
 
   def all_image_repos
-    images = Set.new([image])
-    @linked_images.each { |i| images.union(i.all_image_repos) }
-    images
+    Set.new([image])
   end
 
   def pull_all
@@ -51,18 +44,6 @@ class DockerTest::Docker::Image
       DockerTest.logger.info("pulling image: #{repo}")
       Docker::Image.create('fromImage' => repo)
     end
-  end
-
-  def add_linked_image(image)
-    @linked_images << image
-  end
-
-  def create_linked_containers
-    @linked_images.each do |image|
-      image.create_container
-      @links << "#{image.name}:#{image.alias}"
-    end
-    DockerTest.logger.debug("#{name} links: #{@links}")
   end
 
   def create_container_args
@@ -83,13 +64,15 @@ class DockerTest::Docker::Image
 
   def start_container_args
     args = { 'Binds' => [] }
+
     if @local_code_directory
       args['Binds'] << "#{@local_code_directory}:#{DOCKER_CODE_DIR}"
     end
+
     if @bundle_directory
       args['Binds'] << "#{local_bundle_dir}:#{docker_bundle_dir}"
     end
-    args['Links'] = links if links.any?
+
     args
   end
 
@@ -106,7 +89,6 @@ class DockerTest::Docker::Image
 
   def kill_all
     kill
-    linked_images.each { |i| i.kill_all }
   end
 
 end
