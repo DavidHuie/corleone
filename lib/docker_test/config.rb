@@ -1,22 +1,21 @@
 class DockerTest::Config
 
-  attr_reader :image, :settings
+  attr_reader :raw_testing_image, :raw_bundle_image, :settings
 
   def initialize(logger)
     @logger = logger
-    @image = DockerTest::Docker::Image.new
   end
 
-  def docker_image
-    yield(@image)
-    @image.validate
+  def testing_image
+    @raw_testing_image = DockerTest::Docker::Image.new
+    yield(@raw_testing_image)
+    raw_testing_image.validate
   end
 
-  def linked_image
-    linked_image = DockerTest::Docker::Image.new
-    yield(linked_image)
-    linked_image.validate
-    @image.add_linked_image(linked_image)
+  def bundle_image
+    @raw_bundle_image = DockerTest::Docker::Image.new
+    yield(@raw_bundle_image)
+    raw_bundle_image.validate
   end
 
   def docker_settings

@@ -79,6 +79,10 @@ class DockerTest::Docker::Image
     DockerTest.logger.info("container launched: #{name}")
   end
 
+  def wait
+    @container.wait
+  end
+
   def kill
     DockerTest.logger.debug("destroying container: #{name}")
     @container.delete(force: true)

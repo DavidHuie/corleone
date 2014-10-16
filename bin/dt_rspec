@@ -23,10 +23,16 @@ server = DockerTest::Server.new(emitter, collector, SERVER_URI)
 server.config_file = config_file
 server.start
 
-# launch containers
+# launch and run bundle container
+if config.raw_bundle_image
+  config.raw_bundle_image.create_container
+  config.raw_bundle_image.wait
+end
+
+# launch testing containers
 images = []
 config.settings.num_containers.times do
-  im = config.image.clone
+  im = config.raw_testing_image.clone
   images << im
   im.create_container
 end
