@@ -1,15 +1,15 @@
 class DockerTest::Docker::Image
 
-  DOCKER_CODE_DIR = '/home/app'
-
-  attr_accessor :alias, :image, :local_code_directory,
-                :command, :container, :bundle_directory
+  attr_accessor :alias, :image, :binds, :dns, :volumes_from, :env,
+                :command, :container
 
   def initialize(args = {})
     @alias = args[:alias]
     @image = args[:image]
-    @local_code_directory = args[:local_code_directory]
-    @bundle_directory = args[:bundle_code_directory] || 'vendor/bundle'
+    @binds = args[:binds]
+    @dns = args[:dns]
+    @volumes_from = args[:volumes_from]
+    @env = args[:env]
     @command = args[:command]
 
     validate if @alias || @image
@@ -18,7 +18,10 @@ class DockerTest::Docker::Image
   def args
     { alias: self.alias,
       image: image,
-      local_code_directory: local_code_directory,
+      binds: binds,
+      dns: dns,
+      volumes_from: volumes_from,
+      env: env,
       command: command }
   end
 
@@ -47,31 +50,25 @@ class DockerTest::Docker::Image
   end
 
   def create_container_args
-    args = { 'Image' => @image, 'name' => name, 'Hostname' => name, 'Volumes' => {} }
+    args = { 'Image' => @image, 'name' => name, 'Hostname' => name, 'Volumes' => {}, 'Env' => env }
     args['Cmd'] = [@command] if @command
-    args['Volumes'][DOCKER_CODE_DIR] = {} if @local_code_directory
-    args['Volumes'][docker_bundle_dir] = {} if @bundle_directory
+
+    if @binds
+      @binds.each do |volume_pair|
+        docker_path = volume_pair.split(':')[1]
+        args['Volumes'][docker_path] = {}
+      end
+    end
+
     args
   end
 
-  def docker_bundle_dir
-    File.join(DOCKER_CODE_DIR, @bundle_directory)
-  end
-
-  def local_bundle_dir
-    File.join(@local_code_directory, @bundle_directory)
-  end
-
   def start_container_args
-    args = { 'Binds' => [] }
-
-    if @local_code_directory
-      args['Binds'] << "#{@local_code_directory}:#{DOCKER_CODE_DIR}"
-    end
-
-    if @bundle_directory
-      args['Binds'] << "#{local_bundle_dir}:#{docker_bundle_dir}"
-    end
+    args = {
+      'Binds' => @binds,
+      'Dns' => @dns,
+      'VolumesFrom' => @volumes_from,
+    }
 
     args
   end

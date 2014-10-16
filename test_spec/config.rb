@@ -2,11 +2,13 @@ docker_settings do |config|
   config.num_containers = 8
 end
 
-docker_image do |config|
-  config.alias = 'test_spec'
-  config.image = 'localhost:5000/docker_spec_test'
-  config.local_code_directory = '/docker_test'
-  config.command = 'ruby -Ilib ./bin/dt_rspec_worker'
+docker_image do |image|
+  image.alias = 'test_spec'
+  image.image = 'localhost:5000/docker_spec_test'
+  image.binds = ['/docker_test:/docker_test']
+  image.command = 'ruby -Ilib ./bin/dt_rspec_worker'
+  image.dns = ['8.8.8.8', '8.8.4.4']
+  image.env = ['TEST_ENV_VAR=1']
 end
 
 define_setup do
