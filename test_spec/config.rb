@@ -2,7 +2,7 @@ docker_settings do |config|
   config.num_containers = 8
 end
 
-testing_image do |image|
+test_image do |image|
   image.alias = 'test_spec'
   image.image = 'localhost:5000/docker_spec_test'
   image.binds = ['/docker_test:/docker_test']
