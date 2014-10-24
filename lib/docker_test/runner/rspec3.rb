@@ -1,7 +1,7 @@
 require 'stringio'
 require 'rspec/core'
 
-require 'docker_test/emitter/rspec'
+require_relative '../emitter/rspec3'
 
 module DockerTest::Runner
 

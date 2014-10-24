@@ -1,8 +1,7 @@
 #!/usr/bin/env ruby
 
 require 'docker_test'
-require 'docker_test/collector/rspec'
-require 'docker_test/emitter/rspec'
+require 'docker_test/rspec'
 
 if ENV['DEBUG_LOG'] != '1'
   DockerTest.logger.level = Logger::INFO

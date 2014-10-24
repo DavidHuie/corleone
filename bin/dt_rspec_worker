@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 
 require 'docker_test'
-require 'docker_test/runner/rspec'
+require 'docker_test/rspec'
 
 GATEWAY = `netstat -nr | grep '^0\.0\.0\.0' | awk '{print $2}' | head -n 1`.strip
 SERVER_URI = "druby://#{GATEWAY}:7000"
