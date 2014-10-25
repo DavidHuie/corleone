@@ -1,7 +1,7 @@
 source 'http://rubygems.org'
 
 gem 'docker-api'
-gem 'rspec', '~> 2.14.0'
+gem 'rspec'
 
 group :development do
   gem 'byebug'
