@@ -1,14 +1,11 @@
 require 'rspec/core'
 
-case ::RSpec::Core::Version::STRING.to_i
-when 2
-  require 'docker_test/collector/rspec2'
-  require 'docker_test/emitter/rspec2'
-  require 'docker_test/runner/rspec2'
-when 3
-  require 'docker_test/collector/rspec3'
-  require 'docker_test/emitter/rspec3'
-  require 'docker_test/runner/rspec3'
-else
+RSPEC_VERSION = ::RSpec::Core::Version::STRING.to_i
+
+unless [2, 3].include?(RSPEC_VERSION)
   fail 'requires rspec version 2 or 3'
 end
+
+require "docker_test/emitter/rspec#{RSPEC_VERSION}"
+require "docker_test/collector/rspec#{RSPEC_VERSION}"
+require "docker_test/runner/rspec#{RSPEC_VERSION}"

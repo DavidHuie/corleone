@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-EXAMPLES = 10
+EXAMPLES = 100
 SLEEP = 0.5
 
 EXAMPLES.times do |n|

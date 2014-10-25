@@ -41,5 +41,6 @@ begin
   loop { server.alive? ? sleep(1) : break }
   server.summarize
 ensure
+  # TODO: skip already killed images
   images.each { |i| i.kill_all }
 end

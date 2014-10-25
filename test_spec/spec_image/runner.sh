@@ -3,5 +3,5 @@
 set -x -e
 
 cd /docker_test
-bundle install --without=development --deployment
+bundle install
 sudo -u app bundle exec $@

@@ -1,6 +1,6 @@
 class DockerTest::Server
 
-  attr_accessor :config_file
+  attr_accessor :config_file, :thread
 
   def initialize(emitter, collector, uri)
     @emitter = emitter
