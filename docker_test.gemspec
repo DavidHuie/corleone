@@ -11,7 +11,7 @@ Gem::Specification.new do |s|
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.require_paths = ["lib"]
   s.authors = ["David Huie"]
-  s.date = "2014-10-25"
+  s.date = "2014-10-27"
   s.description = "A toolkit for parallelizing tests among Docker containers"
   s.email = "dahuie@gmail.com"
   s.executables = ["dt_rspec", "dt_rspec_worker"]
@@ -88,18 +88,18 @@ Gem::Specification.new do |s|
 
     if Gem::Version.new(Gem::VERSION) >= Gem::Version.new('1.2.0') then
       s.add_runtime_dependency(%q<docker-api>, [">= 0"])
-      s.add_runtime_dependency(%q<rspec>, [">= 0"])
+      s.add_runtime_dependency(%q<rspec>, [">= 2.99"])
       s.add_development_dependency(%q<byebug>, [">= 0"])
       s.add_development_dependency(%q<jeweler>, [">= 0"])
     else
       s.add_dependency(%q<docker-api>, [">= 0"])
-      s.add_dependency(%q<rspec>, [">= 0"])
+      s.add_dependency(%q<rspec>, [">= 2.99"])
       s.add_dependency(%q<byebug>, [">= 0"])
       s.add_dependency(%q<jeweler>, [">= 0"])
     end
   else
     s.add_dependency(%q<docker-api>, [">= 0"])
-    s.add_dependency(%q<rspec>, [">= 0"])
+    s.add_dependency(%q<rspec>, [">= 2.99"])
     s.add_dependency(%q<byebug>, [">= 0"])
     s.add_dependency(%q<jeweler>, [">= 0"])
   end
