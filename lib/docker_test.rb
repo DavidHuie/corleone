@@ -5,6 +5,11 @@ require 'logger'
 require 'securerandom'
 require 'set'
 
+TIMEOUT = 1000
+
+Excon.defaults[:write_timeout] = TIMEOUT
+Excon.defaults[:read_timeout] = TIMEOUT
+
 module DockerTest
 
   def self.logger
