@@ -46,7 +46,6 @@ module DockerTest::Runner
           new_h.delete(k) if [Proc].include?(v.class)
           new_h[k] = clean_hash(v) if v.instance_of?(Hash)
         end
-        new_h.default_proc = nil
         new_h
       end
 
