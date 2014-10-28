@@ -33,28 +33,30 @@ class DockerTest::Server
   end
 
   def get_item
-    @mutex.lock
     return DockerTest::Message::ZeroItems.new if @emitter.empty?
     message = @emitter.pop
+
+    @mutex.lock
     @expected_result_count += message.num_responses
+    @mutex.unlock
+
     logger.debug("emitting item message: #{message.payload}")
     message
-  ensure
-    @mutex.unlock
   end
 
   def return_result(result)
-    @mutex.lock
     if result.instance_of?(DockerTest::Message::Result)
       logger.debug("result message received: #{result.payload}")
       @collector.process_result(result.payload)
+
+      @mutex.lock
       @result_count += 1
+      @mutex.unlock
+
       return
     end
 
     raise "result error: #{result}"
-  ensure
-    @mutex.unlock
   end
 
   def finished?
@@ -66,10 +68,8 @@ class DockerTest::Server
   end
 
   def alive?
-    @mutex.lock
     kill if finished?
     value = @thread.alive?
-    @mutex.unlock
     value
   end
 

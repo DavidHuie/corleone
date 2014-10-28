@@ -6,11 +6,13 @@ module DockerTest::Collector
       @passed = 0
       @failed = 0
       @pending = 0
+      @mutex = Mutex.new
     end
 
     def process_result(result)
       raw_status = result[:execution_result][:status]
 
+      @mutex.lock
       case raw_status
       when 'failed'
         @failed += 1
@@ -21,6 +23,7 @@ module DockerTest::Collector
       else
         DockerTest.logger.warn("unknown rspec status encountered: #{raw_status}")
       end
+      @mutex.unlock
 
       status = raw_status.to_s.upcase
       description = result[:full_description]
