@@ -21,9 +21,13 @@ module DockerTest::Emitter
       emitter_var(:@configuration)
     end
 
-    def example_groups
+    def read_spec_files
       emitter_var(:@options).configure(configuration)
       configuration.load_spec_files
+    end
+
+    def example_groups
+      read_spec_files
       emitter_var(:@world).announce_filters
       emitter_var(:@world).example_groups
     end

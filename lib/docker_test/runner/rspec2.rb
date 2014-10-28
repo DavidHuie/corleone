@@ -7,6 +7,7 @@ module DockerTest::Runner
 
     def initialize(args, logger)
       super(args)
+      read_spec_files
       @logger = logger
     end
 
