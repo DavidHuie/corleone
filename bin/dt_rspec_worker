@@ -5,11 +5,7 @@ Thread.abort_on_exception = true
 require 'docker_test'
 require 'docker_test/rspec'
 
-def gateway
-  `netstat -nr | grep '^0\.0\.0\.0' | awk '{print $2}' | head -n 1`.strip
-end
-
-SERVER_URI = ENV['SERVER_URI'] || "druby://#{gateway}:7000"
+SERVER_URI = ENV['SERVER_URI'] || "druby://127.0.0.1:7000"
 
 server = DRbObject.new_with_uri(SERVER_URI)
 runner = DockerTest::Worker.new(DockerTest::Runner::RSpec, server)
