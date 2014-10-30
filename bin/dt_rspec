@@ -7,7 +7,7 @@ if ENV['DEBUG_LOG'] != '1'
   DockerTest.logger.level = Logger::INFO
 end
 
-SERVER_URI = 'druby://0.0.0.0:7000'
+SERVER_URI = ENV['SERVER_URI'] || 'druby://0.0.0.0:7000'
 
 config_file = ARGV.shift
 
@@ -22,25 +22,6 @@ server = DockerTest::Server.new(emitter, collector, SERVER_URI)
 server.config_file = config_file
 server.start
 
-# launch and run bundle container
-if config.raw_bundle_image
-  config.raw_bundle_image.create_container
-  config.raw_bundle_image.wait
-end
-
-# launch test containers
-images = []
-config.settings.num_containers.times do
-  im = config.raw_test_image.clone
-  images << im
-  im.create_container
-end
-
 # run loop
-begin
-  loop { server.alive? ? sleep(1) : break }
-  server.summarize
-ensure
-  # TODO: skip already killed images
-  images.each { |i| i.kill_all }
-end
+loop { server.alive? ? sleep(1) : break }
+server.summarize
