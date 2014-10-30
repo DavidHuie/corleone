@@ -11,7 +11,7 @@ Gem::Specification.new do |s|
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.require_paths = ["lib"]
   s.authors = ["David Huie"]
-  s.date = "2014-10-27"
+  s.date = "2014-10-30"
   s.description = "A toolkit for parallelizing tests among Docker containers"
   s.email = "dahuie@gmail.com"
   s.executables = ["dt_rspec", "dt_rspec_worker"]
@@ -58,8 +58,6 @@ Gem::Specification.new do |s|
     "lib/docker_test.rb",
     "lib/docker_test/collector/rspec2.rb",
     "lib/docker_test/collector/rspec3.rb",
-    "lib/docker_test/config.rb",
-    "lib/docker_test/docker/image.rb",
     "lib/docker_test/emitter/rspec2.rb",
     "lib/docker_test/emitter/rspec3.rb",
     "lib/docker_test/message.rb",
