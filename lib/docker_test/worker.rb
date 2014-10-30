@@ -53,11 +53,6 @@ class DockerTest::Worker
   def start
     logger.info("starting worker")
 
-    config_msg = @server.get_config_file
-    @config = DockerTest::Config.new(logger)
-    @config.instance_eval(File.read(config_msg.payload), config_msg.payload) if config_msg
-    @config.setup
-
     runner_args = @server.get_runner_args
     handle_message(runner_args)
 
@@ -70,7 +65,6 @@ class DockerTest::Worker
     logger.warn("exception raised: #{e}")
   ensure
     @runner_thread.join if @runner_thread && @runner_thread.alive?
-    @config.teardown
   end
 
   class RemoteServerLogger
