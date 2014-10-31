@@ -45,10 +45,17 @@ module DockerTest::Runner
 
       def self.clean_hash(h)
         new_h = h.clone
+
         new_h.each do |k, v|
-          new_h.delete(k) if [Proc].include?(v.class)
           new_h[k] = clean_hash(v) if v.instance_of?(Hash)
+
+          begin
+            Marshal.dump(v)
+          rescue TypeError
+            new_h.delete(k)
+          end
         end
+
         new_h
       end
 
