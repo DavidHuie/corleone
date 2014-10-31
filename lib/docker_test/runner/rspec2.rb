@@ -50,6 +50,7 @@ module DockerTest::Runner
           new_h[k] = clean_hash(v) if v.instance_of?(Hash)
 
           begin
+            # TODO: this might be expensive?
             Marshal.dump(v)
           rescue TypeError
             new_h.delete(k)
