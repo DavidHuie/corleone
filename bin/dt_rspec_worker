@@ -5,8 +5,7 @@ Thread.abort_on_exception = true
 require 'docker_test'
 require 'docker_test/rspec'
 
-SERVER_URI = ENV['SERVER_URI'] || "druby://127.0.0.1:7000"
+server_uri = ENV['SERVER_URI'] || "druby://127.0.0.1:7000"
 
-server = DRbObject.new_with_uri(SERVER_URI)
-runner = DockerTest::Worker.new(DockerTest::Runner::RSpec, server)
+runner = DockerTest::Worker.new(DockerTest::Runner::RSpec, server_uri)
 runner.start

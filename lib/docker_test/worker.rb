@@ -1,15 +1,17 @@
 class DockerTest::Worker
 
-  def initialize(runner_class, server)
+  def initialize(runner_class, server_uri)
     @name = `hostname`.strip + '-' + SecureRandom.hex
     @runner_class = runner_class
-    @server = server
     @input_queue = Queue.new
     @output_queue = Queue.new
+    @pool = DockerTest::Pool.new do
+      DRbObject.new_with_uri(server_uri)
+    end
   end
 
   def logger
-    @logger ||= RemoteServerLogger.new("WORKER #{@name}", @server)
+    @logger ||= RemoteServerLogger.new("WORKER #{@name}", @pool.get)
   end
 
   def start_runner
@@ -52,35 +54,41 @@ class DockerTest::Worker
   end
 
   def publish_result(result)
-    @server.return_result(result)
+    conn = @pool.get
+    conn.return_result(result)
+  ensure
+    @pool.return(conn)
   end
 
   def start
     logger.info("starting worker")
+    conn = @pool.get
 
-    @server.check_in(@name)
-    runner_args = @server.get_runner_args
+    conn.check_in(@name)
+    runner_args = conn.get_runner_args
     handle_message(runner_args)
 
     loop do
-      message = @server.get_item
+      message = conn.get_item
       handle_message(message)
       break if @quit
     end
 
-    @server.check_out(@name)
+    conn.check_out(@name)
   rescue StandardError => e
     logger.warn("exception raised: #{e}")
     e.backtrace.each do |line|
       logger.warn("    #{line}")
     end
+  ensure
+    @pool.return(conn)
   end
 
   class RemoteServerLogger
 
-    def initialize(prefix, server)
+    def initialize(prefix, conn)
       @prefix = prefix
-      @server = server
+      @conn = conn
     end
 
     def wrapped_message(msg)
@@ -89,7 +97,7 @@ class DockerTest::Worker
 
     [:debug, :info, :warn].each do |name|
       define_method(name) do |msg|
-        @server.log(name, wrapped_message(msg))
+        @conn.log(name, wrapped_message(msg))
       end
     end
 
