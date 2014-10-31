@@ -46,10 +46,7 @@ module DockerTest::Emitter
     end
 
     def pop
-      item = item_queue.pop
-      message = DockerTest::Message::Item.new(item)
-      message.num_responses = item.examples.length
-      message
+      DockerTest::Message::Item.new(item_queue.pop)
     end
 
     def empty?
