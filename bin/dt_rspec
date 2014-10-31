@@ -18,5 +18,5 @@ server = DockerTest::Server.new(emitter, collector, SERVER_URI)
 server.start
 
 # run loop
-loop { server.alive? ? sleep(1) : break }
+loop { server.alive? ? Kernel.sleep(1) : break }
 server.summarize
