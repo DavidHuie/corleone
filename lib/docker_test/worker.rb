@@ -71,6 +71,9 @@ class DockerTest::Worker
     @server.check_out(@name)
   rescue StandardError => e
     logger.warn("exception raised: #{e}")
+    e.backtrace.each do |line|
+      logger.warn("    #{line}")
+    end
   end
 
   class RemoteServerLogger
