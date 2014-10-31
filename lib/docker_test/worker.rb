@@ -19,7 +19,6 @@ class DockerTest::Worker
         conn.ping
         break
       rescue DRb::DRbConnError
-        raise 'could not connect to server' if retries >= MAX_RETRIES
         Kernel.sleep(5)
       end
     end
