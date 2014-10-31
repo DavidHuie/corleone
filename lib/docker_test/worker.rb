@@ -67,11 +67,10 @@ class DockerTest::Worker
       handle_message(message)
       break if @quit
     end
+
+    @server.check_out(@name)
   rescue StandardError => e
     logger.warn("exception raised: #{e}")
-  ensure
-    @server.check_out(@name)
-    @runner_thread.join if @runner_thread && @runner_thread.alive?
   end
 
   class RemoteServerLogger
