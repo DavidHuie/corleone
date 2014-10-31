@@ -7,5 +7,6 @@ require 'docker_test/rspec'
 
 server_uri = ENV['SERVER_URI'] || "druby://127.0.0.1:7000"
 
-runner = DockerTest::Worker.new(DockerTest::Runner::RSpec, server_uri)
-runner.start
+worker = DockerTest::Worker.new(DockerTest::Runner::RSpec, server_uri)
+worker.block_until_server_ready
+worker.start

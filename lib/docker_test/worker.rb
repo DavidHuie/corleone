@@ -10,6 +10,24 @@ class DockerTest::Worker
     end
   end
 
+  MAX_RETRIES = 50
+
+  def block_until_server_ready
+    retries = 0
+
+    loop do
+      begin
+        conn = @pool.get
+        conn.ping
+        break
+      rescue DRb::DRbConnError
+        raise 'could not connect to server' if retries >= MAX_RETRIES
+        retries += 1
+        Kernel.sleep(5)
+      end
+    end
+  end
+
   def logger
     @logger ||= RemoteServerLogger.new("WORKER #{@name}", @pool.get)
   end

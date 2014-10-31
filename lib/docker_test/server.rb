@@ -75,4 +75,6 @@ class DockerTest::Server
     @collector.summarize
   end
 
+  def ping; end
+
 end
