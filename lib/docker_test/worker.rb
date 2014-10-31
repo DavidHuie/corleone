@@ -1,7 +1,7 @@
 class DockerTest::Worker
 
   def initialize(runner_class, server)
-    @name = `hostname`.strip
+    @name = `hostname`.strip + '-' + SecureRandom.hex
     @runner_class = runner_class
     @server = server
     @input_queue = Queue.new
@@ -21,7 +21,7 @@ class DockerTest::Worker
     when DockerTest::Message::Item
       handle_example(message)
     when DockerTest::Message::ZeroItems
-      handle_zero_items(message.payload)
+      handle_zero_items
     when DockerTest::Message::RunnerArgs
       handle_runner_args(message.payload)
     else
@@ -31,7 +31,12 @@ class DockerTest::Worker
 
   def handle_example(message)
     @input_queue << message.payload
-    message.num_responses.times { publish_result }
+
+    loop do
+      result = @output_queue.pop
+      break if result.instance_of?(DockerTest::Message::Finished)
+      publish_result(result)
+    end
   end
 
   def handle_runner_args(payload)
@@ -40,19 +45,20 @@ class DockerTest::Worker
     start_runner
   end
 
-  def handle_zero_items(payload)
+  def handle_zero_items
     @quit = true
     @input_queue << DockerTest::Message::Stop.new
     @runner_thread.join
   end
 
-  def publish_result
-    @server.return_result(@output_queue.pop)
+  def publish_result(result)
+    @server.return_result(result)
   end
 
   def start
     logger.info("starting worker")
 
+    @server.check_in(@name)
     runner_args = @server.get_runner_args
     handle_message(runner_args)
 
@@ -64,6 +70,7 @@ class DockerTest::Worker
   rescue StandardError => e
     logger.warn("exception raised: #{e}")
   ensure
+    @server.check_out(@name)
     @runner_thread.join if @runner_thread && @runner_thread.alive?
   end
 

@@ -27,6 +27,8 @@ module DockerTest::Runner
             @logger.debug("rspec example received: #{example}")
             break if example.instance_of?(DockerTest::Message::Stop)
             example.run(reporter)
+
+            output_queue << DockerTest::Message::Finished.new
           end
         ensure
           configuration.run_hook(:after, :suite)

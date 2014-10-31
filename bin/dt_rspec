@@ -3,8 +3,10 @@
 require 'docker_test'
 require 'docker_test/rspec'
 
-if ENV['DEBUG_LOG'] != '1'
-  DockerTest.logger.level = Logger::INFO
+DockerTest.logger.level = Logger::INFO
+
+if ENV['DEBUG']
+  DockerTest.logger.level = Logger::DEBUG
 end
 
 SERVER_URI = ENV['SERVER_URI'] || 'druby://0.0.0.0:7000'

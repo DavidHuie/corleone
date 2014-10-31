@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-EXAMPLES = 100
+EXAMPLES = 20
 SLEEP = 0.01
 
 EXAMPLES.times do |n|
@@ -12,17 +12,17 @@ EXAMPLES.times do |n|
       expect(1).to eq(1)
     end
 
-  end
+    2.times do |n|
 
-end
+      describe "failing example #{n}" do
 
-EXAMPLES.times do |n|
+        it 'should do something' do
+          sleep(SLEEP)
+          expect(1).to eq(2)
+        end
 
-  describe "failing example #{n}" do
+      end
 
-    it 'should do something' do
-      sleep(SLEEP)
-      expect(1).to eq(2)
     end
 
   end

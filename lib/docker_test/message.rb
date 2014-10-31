@@ -16,6 +16,7 @@ module DockerTest
     class ConfigFile < Message; end
     class Stop < Message; end
     class ZeroItems < Message; end
+    class Finished < Message; end
 
   end
 

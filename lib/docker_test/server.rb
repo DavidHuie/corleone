@@ -6,10 +6,8 @@ class DockerTest::Server
     @emitter = emitter
     @collector = collector
     @uri = uri
-    @mutex = Mutex.new
     @runner_args = @emitter.runner_args
-    @expected_result_count = 0
-    @result_count = 0
+    @registry = DockerTest::Registry.new
   end
 
   def logger
@@ -21,10 +19,14 @@ class DockerTest::Server
     return
   end
 
-  def get_config_file
-    msg = DockerTest::Message::ConfigFile.new(@config_file)
-    logger.debug("emitting config_file message: #{msg.payload}")
-    msg
+  def check_in(name)
+    logger.debug("worker checking in: #{name}")
+    @registry.check_in(name)
+  end
+
+  def check_out(name)
+    logger.debug("worker checking out: #{name}")
+    @registry.remove(name)
   end
 
   def get_runner_args
@@ -35,11 +37,6 @@ class DockerTest::Server
   def get_item
     return DockerTest::Message::ZeroItems.new if @emitter.empty?
     message = @emitter.pop
-
-    @mutex.lock
-    @expected_result_count += message.num_responses
-    @mutex.unlock
-
     logger.debug("emitting item message: #{message.payload}")
     message
   end
@@ -48,11 +45,6 @@ class DockerTest::Server
     if result.instance_of?(DockerTest::Message::Result)
       logger.debug("result message received: #{result.payload}")
       @collector.process_result(result.payload)
-
-      @mutex.lock
-      @result_count += 1
-      @mutex.unlock
-
       return
     end
 
@@ -60,7 +52,7 @@ class DockerTest::Server
   end
 
   def finished?
-    @emitter.empty? && (@expected_result_count == @result_count)
+    @emitter.empty? && @registry.finished?
   end
 
   def kill
