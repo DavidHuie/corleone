@@ -30,7 +30,10 @@ class DockerTest::Server
   end
 
   def get_runner_args
-    logger.debug("emitting runner args message: #{@runner_args.payload}")
+    if @runner_args
+      logger.debug("emitting runner args message: #{@runner_args.payload}")
+    end
+
     @runner_args
   end
 

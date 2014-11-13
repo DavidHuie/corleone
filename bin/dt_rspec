@@ -13,7 +13,7 @@ SERVER_URI = ENV['SERVER_URI'] || 'druby://0.0.0.0:7000'
 
 # start server
 collector = DockerTest::Collector::RSpec.new
-emitter = DockerTest::Emitter::RSpec.new(ARGV)
+emitter = DockerTest::Emitter::RSpec.new(ARGV, ENV['WORKERS'].to_i || 1)
 server = DockerTest::Server.new(emitter, collector, SERVER_URI)
 server.start
 
