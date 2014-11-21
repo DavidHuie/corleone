@@ -1,7 +1,0 @@
----
-
-- hosts: dev
-  roles:
-    - vagrant
-    - { role: docker, sudo: yes }
-    - { role: docker-registry, sudo: yes }

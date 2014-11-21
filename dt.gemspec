@@ -30,31 +30,20 @@ Gem::Specification.new do |s|
     "Rakefile",
     "VERSION",
     "Vagrantfile",
-    "ansible/dev.yml",
-    "ansible/host_vars/dev",
-    "ansible/roles/docker-registry/README.md",
-    "ansible/roles/docker-registry/defaults/main.yml",
-    "ansible/roles/docker-registry/handlers/main.yml",
-    "ansible/roles/docker-registry/meta/main.yml",
-    "ansible/roles/docker-registry/tasks/main.yml",
-    "ansible/roles/docker-registry/templates/config.yml.j2",
-    "ansible/roles/docker-registry/vars/main.yml",
-    "ansible/roles/docker/README.md",
-    "ansible/roles/docker/defaults/main.yml",
-    "ansible/roles/docker/handlers/main.yml",
-    "ansible/roles/docker/meta/main.yml",
-    "ansible/roles/docker/tasks/main.yml",
-    "ansible/roles/docker/vars/main.yml",
-    "ansible/roles/vagrant/README.md",
-    "ansible/roles/vagrant/defaults/main.yml",
-    "ansible/roles/vagrant/files/zshrc",
-    "ansible/roles/vagrant/handlers/main.yml",
-    "ansible/roles/vagrant/meta/main.yml",
-    "ansible/roles/vagrant/tasks/main.yml",
-    "ansible/roles/vagrant/vars/main.yml",
     "bin/dt_rspec",
     "bin/dt_rspec_worker",
     "docker_test.gemspec",
+    "dt.gemspec",
+    "lib/dt.rb",
+    "lib/dt/collector/rspec.rb",
+    "lib/dt/emitter/rspec.rb",
+    "lib/dt/message.rb",
+    "lib/dt/pool.rb",
+    "lib/dt/registry.rb",
+    "lib/dt/rspec.rb",
+    "lib/dt/runner/rspec.rb",
+    "lib/dt/server.rb",
+    "lib/dt/worker.rb",
     "spec/docker_spec.rb",
     "spec/spec_helper.rb",
     "test_spec/config.rb",
@@ -76,18 +65,15 @@ Gem::Specification.new do |s|
     s.specification_version = 4
 
     if Gem::Version.new(Gem::VERSION) >= Gem::Version.new('1.2.0') then
-      s.add_runtime_dependency(%q<docker-api>, [">= 0"])
       s.add_runtime_dependency(%q<rspec>, [">= 2.99"])
       s.add_development_dependency(%q<byebug>, [">= 0"])
       s.add_development_dependency(%q<jeweler>, [">= 0"])
     else
-      s.add_dependency(%q<docker-api>, [">= 0"])
       s.add_dependency(%q<rspec>, [">= 2.99"])
       s.add_dependency(%q<byebug>, [">= 0"])
       s.add_dependency(%q<jeweler>, [">= 0"])
     end
   else
-    s.add_dependency(%q<docker-api>, [">= 0"])
     s.add_dependency(%q<rspec>, [">= 2.99"])
     s.add_dependency(%q<byebug>, [">= 0"])
     s.add_dependency(%q<jeweler>, [">= 0"])
