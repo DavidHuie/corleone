@@ -1,7 +1,7 @@
 require 'stringio'
 require 'rspec/core'
 
-module DT::Runner
+module Corleone::Runner
 
   class RSpec
 
@@ -20,11 +20,11 @@ module DT::Runner
         example = input_queue.pop
         @logger.debug("rspec examples received: #{example}")
 
-        break if example.instance_of?(DT::Message::Stop)
+        break if example.instance_of?(Corleone::Message::Stop)
 
         system(command(example))
 
-        output_queue << DT::Message::Finished.new
+        output_queue << Corleone::Message::Finished.new
       end
     end
 

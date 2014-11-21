@@ -1,11 +1,11 @@
-class DT::Worker
+class Corleone::Worker
 
   def initialize(runner_class, server_uri)
     @name = `hostname`.strip + '-' + SecureRandom.hex
     @runner_class = runner_class
     @input_queue = Queue.new
     @output_queue = Queue.new
-    @pool = DT::Pool.new do
+    @pool = Corleone::Pool.new do
       DRbObject.new_with_uri(server_uri)
     end
   end
@@ -34,11 +34,11 @@ class DT::Worker
 
   def handle_message(message)
     case message
-    when DT::Message::Item
+    when Corleone::Message::Item
       handle_example(message)
-    when DT::Message::ZeroItems
+    when Corleone::Message::ZeroItems
       handle_zero_items
-    when DT::Message::RunnerArgs
+    when Corleone::Message::RunnerArgs
       handle_runner_args(message.payload)
     else
       logger.warn("invalid received message: #{message}")
@@ -50,7 +50,7 @@ class DT::Worker
 
     loop do
       result = @output_queue.pop
-      break if result.instance_of?(DT::Message::Finished)
+      break if result.instance_of?(Corleone::Message::Finished)
       publish_result(result)
     end
   end
@@ -63,7 +63,7 @@ class DT::Worker
 
   def handle_zero_items
     @quit = true
-    @input_queue << DT::Message::Stop.new
+    @input_queue << Corleone::Message::Stop.new
     @runner_thread.join
   end
 

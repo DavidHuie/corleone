@@ -1,4 +1,4 @@
-class DT::Pool
+class Corleone::Pool
 
   def initialize(&block)
     @initializer = block

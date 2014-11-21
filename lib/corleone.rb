@@ -4,7 +4,7 @@ require 'logger'
 require 'securerandom'
 require 'set'
 
-module DT
+module Corleone
 
   def self.logger
     @logger ||= Logger.new(STDOUT)
@@ -12,8 +12,8 @@ module DT
 
 end
 
-require 'dt/server'
-require 'dt/message'
-require 'dt/worker'
-require 'dt/registry'
-require 'dt/pool'
+require 'corleone/server'
+require 'corleone/message'
+require 'corleone/worker'
+require 'corleone/registry'
+require 'corleone/pool'

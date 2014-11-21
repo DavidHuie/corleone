@@ -1,6 +1,6 @@
 require 'stringio'
 
-module DT::Emitter
+module Corleone::Emitter
 
   class RSpec
 
@@ -30,12 +30,12 @@ module DT::Emitter
     end
 
     def pop
-      DT::Message::Item.new(item_queue.pop)
+      Corleone::Message::Item.new(item_queue.pop)
     end
 
     def process_items
       spec_groups.each do |group|
-        item_queue << DT::Message::Item.new(group)
+        item_queue << Corleone::Message::Item.new(group)
       end
     end
 
@@ -44,7 +44,7 @@ module DT::Emitter
     end
 
     def runner_args
-      DT::Message::RunnerArgs.new(nil)
+      Corleone::Message::RunnerArgs.new(nil)
     end
 
   end

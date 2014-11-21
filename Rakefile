@@ -3,8 +3,8 @@ require 'rake'
 require 'jeweler'
 
 Jeweler::Tasks.new do |gem|
-  gem.name = 'dt'
-  gem.homepage = 'http://github.com/DavidHuie/dt'
+  gem.name = 'corleone'
+  gem.homepage = 'http://github.com/DavidHuie/corleone'
   gem.license = 'MIT'
   gem.summary = 'A toolkit for distributing tasks among workers'
   gem.description = 'A toolkit for distributing tasks among workers'

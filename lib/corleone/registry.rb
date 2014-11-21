@@ -1,4 +1,4 @@
-class DT::Registry
+class Corleone::Registry
 
   def initialize
     @started = false

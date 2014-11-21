@@ -2,6 +2,6 @@
 
 set -x -e
 
-cd /dt
+cd /corleone
 bundle install
 sudo -u app bundle exec $@

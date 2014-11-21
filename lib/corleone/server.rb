@@ -1,4 +1,4 @@
-class DT::Server
+class Corleone::Server
 
   attr_accessor :config_file, :thread
 
@@ -7,11 +7,11 @@ class DT::Server
     @collector = collector
     @uri = uri
     @runner_args = @emitter.runner_args
-    @registry = DT::Registry.new
+    @registry = Corleone::Registry.new
   end
 
   def logger
-    DT.logger
+    Corleone.logger
   end
 
   def log(type, message)
@@ -38,14 +38,14 @@ class DT::Server
   end
 
   def get_item
-    return DT::Message::ZeroItems.new if @emitter.empty?
+    return Corleone::Message::ZeroItems.new if @emitter.empty?
     message = @emitter.pop
     logger.debug("emitting item message: #{message.payload}")
     message
   end
 
   def return_result(result)
-    if result.instance_of?(DT::Message::Result)
+    if result.instance_of?(Corleone::Message::Result)
       logger.debug("result message received: #{result.payload}")
       @collector.process_result(result.payload)
       return

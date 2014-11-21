@@ -1,4 +1,4 @@
-module DT::Collector
+module Corleone::Collector
 
   class RSpec
 
