@@ -14,7 +14,7 @@ Gem::Specification.new do |s|
   s.date = "2014-11-21"
   s.description = "A toolkit for distributing tasks among workers"
   s.email = "dahuie@gmail.com"
-  s.executables = ["dt_rspec", "dt_rspec_worker"]
+  s.executables = ["corleone_rspec", "corleone_rspec_worker"]
   s.extra_rdoc_files = [
     "LICENSE.txt",
     "README.md"
@@ -29,6 +29,19 @@ Gem::Specification.new do |s|
     "README.md",
     "Rakefile",
     "VERSION",
+    "bin/corleone_rspec",
+    "bin/corleone_rspec_worker",
+    "corleone.gemspec",
+    "lib/corleone.rb",
+    "lib/corleone/collector/rspec.rb",
+    "lib/corleone/emitter/rspec.rb",
+    "lib/corleone/message.rb",
+    "lib/corleone/pool.rb",
+    "lib/corleone/registry.rb",
+    "lib/corleone/rspec.rb",
+    "lib/corleone/runner/rspec.rb",
+    "lib/corleone/server.rb",
+    "lib/corleone/worker.rb",
     "spec/spec_helper.rb",
     "test_spec/example2_spec.rb",
     "test_spec/example3_spec.rb",
