@@ -1,6 +1,6 @@
 require 'stringio'
 
-module DockerTest::Emitter
+module DT::Emitter
 
   class RSpec
 
@@ -30,12 +30,12 @@ module DockerTest::Emitter
     end
 
     def pop
-      DockerTest::Message::Item.new(item_queue.pop)
+      DT::Message::Item.new(item_queue.pop)
     end
 
     def process_items
       spec_groups.each do |group|
-        item_queue << DockerTest::Message::Item.new(group)
+        item_queue << DT::Message::Item.new(group)
       end
     end
 
@@ -44,7 +44,7 @@ module DockerTest::Emitter
     end
 
     def runner_args
-      DockerTest::Message::RunnerArgs.new(nil)
+      DT::Message::RunnerArgs.new(nil)
     end
 
   end

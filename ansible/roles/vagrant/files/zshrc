@@ -15,4 +15,4 @@ export PATH
 setopt auto_pushd
 setopt PUSHD_TO_HOME
 
-cd /docker_test
+cd /dt

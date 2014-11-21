@@ -1,4 +1,4 @@
-module DockerTest::Collector
+module DT::Collector
 
   class RSpec
 

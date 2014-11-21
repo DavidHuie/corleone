@@ -1,7 +1,7 @@
 require 'stringio'
 require 'rspec/core'
 
-module DockerTest::Runner
+module DT::Runner
 
   class RSpec
 
@@ -20,11 +20,11 @@ module DockerTest::Runner
         example = input_queue.pop
         @logger.debug("rspec examples received: #{example}")
 
-        break if example.instance_of?(DockerTest::Message::Stop)
+        break if example.instance_of?(DT::Message::Stop)
 
         system(command(example))
 
-        output_queue << DockerTest::Message::Finished.new
+        output_queue << DT::Message::Finished.new
       end
     end
 

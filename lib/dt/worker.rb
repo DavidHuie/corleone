@@ -1,11 +1,11 @@
-class DockerTest::Worker
+class DT::Worker
 
   def initialize(runner_class, server_uri)
     @name = `hostname`.strip + '-' + SecureRandom.hex
     @runner_class = runner_class
     @input_queue = Queue.new
     @output_queue = Queue.new
-    @pool = DockerTest::Pool.new do
+    @pool = DT::Pool.new do
       DRbObject.new_with_uri(server_uri)
     end
   end
@@ -34,11 +34,11 @@ class DockerTest::Worker
 
   def handle_message(message)
     case message
-    when DockerTest::Message::Item
+    when DT::Message::Item
       handle_example(message)
-    when DockerTest::Message::ZeroItems
+    when DT::Message::ZeroItems
       handle_zero_items
-    when DockerTest::Message::RunnerArgs
+    when DT::Message::RunnerArgs
       handle_runner_args(message.payload)
     else
       logger.warn("invalid received message: #{message}")
@@ -50,7 +50,7 @@ class DockerTest::Worker
 
     loop do
       result = @output_queue.pop
-      break if result.instance_of?(DockerTest::Message::Finished)
+      break if result.instance_of?(DT::Message::Finished)
       publish_result(result)
     end
   end
@@ -63,7 +63,7 @@ class DockerTest::Worker
 
   def handle_zero_items
     @quit = true
-    @input_queue << DockerTest::Message::Stop.new
+    @input_queue << DT::Message::Stop.new
     @runner_thread.join
   end
 

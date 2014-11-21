@@ -2,6 +2,6 @@
 
 set -x -e
 
-cd /docker_test
+cd /dt
 bundle install
 sudo -u app bundle exec $@

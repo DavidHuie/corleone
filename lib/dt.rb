@@ -4,7 +4,7 @@ require 'logger'
 require 'securerandom'
 require 'set'
 
-module DockerTest
+module DT
 
   def self.logger
     @logger ||= Logger.new(STDOUT)
@@ -14,8 +14,8 @@ module DockerTest
 
 end
 
-require 'docker_test/server'
-require 'docker_test/message'
-require 'docker_test/worker'
-require 'docker_test/registry'
-require 'docker_test/pool'
+require 'dt/server'
+require 'dt/message'
+require 'dt/worker'
+require 'dt/registry'
+require 'dt/pool'

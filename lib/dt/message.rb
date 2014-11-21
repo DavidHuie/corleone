@@ -1,4 +1,4 @@
-module DockerTest
+module DT
 
   class Message
 

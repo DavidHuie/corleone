@@ -1,4 +1,4 @@
-class DockerTest::Pool
+class DT::Pool
 
   def initialize(&block)
     @initializer = block

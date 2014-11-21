@@ -1,20 +1,20 @@
 require 'spec_helper'
 
-describe DockerTest::Docker::Image do
+describe DT::Docker::Image do
 
   context 'linked containers' do
 
     let(:image_1) do
-      DockerTest::Docker::Image.new(image: 'localhost:5000/docker_spec_test',
+      DT::Docker::Image.new(image: 'localhost:5000/docker_spec_test',
                                     alias: 'i1',
-                                    local_code_directory: '/docker_test',
+                                    local_code_directory: '/dt',
                                     command: 'sleep 500')
     end
 
     let(:image_2) do
-      DockerTest::Docker::Image.new(image: 'localhost:5000/docker_spec_test',
+      DT::Docker::Image.new(image: 'localhost:5000/docker_spec_test',
                                     alias: 'i2',
-                                    local_code_directory: '/docker_test',
+                                    local_code_directory: '/dt',
                                     command: 'sleep 500')
     end
 

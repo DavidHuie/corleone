@@ -1,4 +1,4 @@
-class DockerTest::Server
+class DT::Server
 
   attr_accessor :config_file, :thread
 
@@ -7,11 +7,11 @@ class DockerTest::Server
     @collector = collector
     @uri = uri
     @runner_args = @emitter.runner_args
-    @registry = DockerTest::Registry.new
+    @registry = DT::Registry.new
   end
 
   def logger
-    DockerTest.logger
+    DT.logger
   end
 
   def log(type, message)
@@ -38,14 +38,14 @@ class DockerTest::Server
   end
 
   def get_item
-    return DockerTest::Message::ZeroItems.new if @emitter.empty?
+    return DT::Message::ZeroItems.new if @emitter.empty?
     message = @emitter.pop
     logger.debug("emitting item message: #{message.payload}")
     message
   end
 
   def return_result(result)
-    if result.instance_of?(DockerTest::Message::Result)
+    if result.instance_of?(DT::Message::Result)
       logger.debug("result message received: #{result.payload}")
       @collector.process_result(result.payload)
       return

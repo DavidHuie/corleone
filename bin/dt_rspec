@@ -1,20 +1,20 @@
 #!/usr/bin/env ruby
 
-require 'docker_test'
-require 'docker_test/rspec'
+require 'dt'
+require 'dt/rspec'
 
-DockerTest.logger.level = Logger::INFO
+DT.logger.level = Logger::INFO
 
 if ENV['DEBUG']
-  DockerTest.logger.level = Logger::DEBUG
+  DT.logger.level = Logger::DEBUG
 end
 
 SERVER_URI = ENV['SERVER_URI'] || 'druby://0.0.0.0:7000'
 
 # start server
-collector = DockerTest::Collector::RSpec.new
-emitter = DockerTest::Emitter::RSpec.new(ARGV, (ENV['WORKERS'] || 1).to_i)
-server = DockerTest::Server.new(emitter, collector, SERVER_URI)
+collector = DT::Collector::RSpec.new
+emitter = DT::Emitter::RSpec.new(ARGV, (ENV['WORKERS'] || 1).to_i)
+server = DT::Server.new(emitter, collector, SERVER_URI)
 server.start
 
 # run loop

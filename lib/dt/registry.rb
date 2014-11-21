@@ -1,4 +1,4 @@
-class DockerTest::Registry
+class DT::Registry
 
   def initialize
     @started = false

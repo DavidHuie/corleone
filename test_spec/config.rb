@@ -5,7 +5,7 @@ end
 test_image do |image|
   image.alias = 'test_spec'
   image.image = 'localhost:5000/docker_spec_test'
-  image.binds = ['/docker_test:/docker_test']
+  image.binds = ['/dt:/docker_test']
   image.command = 'ruby -Ilib ./bin/dt_rspec_worker'
   image.dns = ['8.8.8.8', '8.8.4.4']
   image.env = ['TEST_ENV_VAR=1']

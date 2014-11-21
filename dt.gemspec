@@ -11,8 +11,8 @@ Gem::Specification.new do |s|
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.require_paths = ["lib"]
   s.authors = ["David Huie"]
-  s.date = "2014-11-13"
-  s.description = "A toolkit for parallelizing tests among Docker containers"
+  s.date = "2014-11-21"
+  s.description = "A toolkit for distributing tasks among workers"
   s.email = "dahuie@gmail.com"
   s.executables = ["dt_rspec", "dt_rspec_worker"]
   s.extra_rdoc_files = [
@@ -54,17 +54,7 @@ Gem::Specification.new do |s|
     "ansible/roles/vagrant/vars/main.yml",
     "bin/dt_rspec",
     "bin/dt_rspec_worker",
-    "dt.gemspec",
-    "lib/dt.rb",
-    "lib/dt/collector/rspec.rb",
-    "lib/dt/emitter/rspec.rb",
-    "lib/dt/message.rb",
-    "lib/dt/pool.rb",
-    "lib/dt/registry.rb",
-    "lib/dt/rspec.rb",
-    "lib/dt/runner/rspec.rb",
-    "lib/dt/server.rb",
-    "lib/dt/worker.rb",
+    "docker_test.gemspec",
     "spec/docker_spec.rb",
     "spec/spec_helper.rb",
     "test_spec/config.rb",
@@ -80,7 +70,7 @@ Gem::Specification.new do |s|
   s.homepage = "http://github.com/DavidHuie/dt"
   s.licenses = ["MIT"]
   s.rubygems_version = "2.2.2"
-  s.summary = "A toolkit for parallelizing tests among Docker containers"
+  s.summary = "A toolkit for distributing tasks among workers"
 
   if s.respond_to? :specification_version then
     s.specification_version = 4

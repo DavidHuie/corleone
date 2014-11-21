@@ -3,11 +3,11 @@ require 'rake'
 require 'jeweler'
 
 Jeweler::Tasks.new do |gem|
-  gem.name = 'docker_test'
-  gem.homepage = 'http://github.com/DavidHuie/docker_test'
+  gem.name = 'dt'
+  gem.homepage = 'http://github.com/DavidHuie/dt'
   gem.license = 'MIT'
-  gem.summary = 'A toolkit for parallelizing tests among Docker containers'
-  gem.description = 'A toolkit for parallelizing tests among Docker containers'
+  gem.summary = 'A toolkit for distributing tasks among workers'
+  gem.description = 'A toolkit for distributing tasks among workers'
   gem.email = 'dahuie@gmail.com'
   gem.authors = ['David Huie']
 end
