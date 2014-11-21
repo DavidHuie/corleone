@@ -42,16 +42,12 @@ Gem::Specification.new do |s|
     "lib/dt/runner/rspec.rb",
     "lib/dt/server.rb",
     "lib/dt/worker.rb",
-    "spec/docker_spec.rb",
     "spec/spec_helper.rb",
-    "test_spec/config.rb",
     "test_spec/example2_spec.rb",
     "test_spec/example3_spec.rb",
     "test_spec/example_spec.rb",
     "test_spec/spec_helper.rb",
     "test_spec/spec_image/Dockerfile",
-    "test_spec/spec_image/build.sh",
-    "test_spec/spec_image/docker-registry.sh",
     "test_spec/spec_image/runner.sh"
   ]
   s.homepage = "http://github.com/DavidHuie/dt"

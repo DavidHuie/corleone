@@ -10,8 +10,6 @@ module DT
     @logger ||= Logger.new(STDOUT)
   end
 
-  module Docker; end
-
 end
 
 require 'dt/server'
