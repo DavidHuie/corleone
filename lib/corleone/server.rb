@@ -80,4 +80,8 @@ class Corleone::Server
 
   def ping; end
 
+  def wait
+    loop { alive? ? Kernel.sleep(1) : break }
+  end
+
 end

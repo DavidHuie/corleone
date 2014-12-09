@@ -3,20 +3,10 @@
 require 'corleone'
 require 'corleone/rspec'
 
-Corleone.logger.level = Logger::INFO
-
-if ENV['DEBUG']
-  Corleone.logger.level = Logger::DEBUG
-end
-
-SERVER_URI = ENV['SERVER_URI'] || 'druby://0.0.0.0:7000'
-
-# start server
 collector = Corleone::Collector::RSpec.new
-emitter = Corleone::Emitter::RSpec.new(ARGV, (ENV['WORKERS'] || 1).to_i)
-server = Corleone::Server.new(emitter, collector, SERVER_URI)
-server.start
+emitter = Corleone::Emitter::RSpec.new(ARGV, Corleone.workers)
+server = Corleone::Server.new(emitter, collector, Corleone::server_uri)
 
-# run loop
-loop { server.alive? ? Kernel.sleep(1) : break }
+server.start
+server.wait
 server.summarize

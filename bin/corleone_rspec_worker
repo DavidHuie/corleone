@@ -1,12 +1,8 @@
 #!/usr/bin/env ruby
 
-Thread.abort_on_exception = true
-
 require 'corleone'
 require 'corleone/rspec'
 
-server_uri = ENV['SERVER_URI'] || "druby://127.0.0.1:7000"
-
-worker = Corleone::Worker.new(Corleone::Runner::RSpec, server_uri)
+worker = Corleone::Worker.new(Corleone::Runner::RSpec, Corleone.server_uri)
 worker.block_until_server_ready
 worker.start
