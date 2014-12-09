@@ -1,7 +1,5 @@
 class Corleone::Server
 
-  attr_accessor :config_file, :thread
-
   def initialize(emitter, collector, uri)
     @emitter = emitter
     @collector = collector
@@ -81,7 +79,7 @@ class Corleone::Server
   def ping; end
 
   def wait
-    loop { alive? ? Kernel.sleep(1) : break }
+    loop { alive? ? Kernel.sleep(0.1) : break }
   end
 
 end

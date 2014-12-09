@@ -10,7 +10,8 @@ class Corleone::Worker
     end
   end
 
-  MAX_RETRIES = 50
+  SERVER_WAIT_SLEEP = 0.1 # Seconds
+  MAX_RETRIES = SERVER_WAIT_SLEEP * 3000
 
   def block_until_server_ready
     loop do
@@ -19,7 +20,7 @@ class Corleone::Worker
         conn.ping
         break
       rescue DRb::DRbConnError
-        Kernel.sleep(5)
+        Kernel.sleep(SERVER_WAIT_SLEEP)
       end
     end
   end
